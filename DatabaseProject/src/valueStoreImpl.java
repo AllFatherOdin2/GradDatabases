@@ -28,7 +28,12 @@ public class valueStoreImpl {
 	public valueStoreImpl(String custDir){
 		dir = custDir + "\\";
 	}
+	
 	public static void main(String[] args) throws valueStoreException{
+		byte[] data = new byte[2];
+		data[0] = (byte)'a';
+		data[1] = (byte)'c';
+		put(1, data);
 		get(1);
 		
 	}
@@ -40,7 +45,7 @@ public class valueStoreImpl {
 	 * @param key Key to write data under
 	 * @param data Data to record
 	 */
-	public void put(int key, byte[] data){
+	public static void put(int key, byte[] data){
 		File entry;
 		FileOutputStream fop = null;
 		try{
@@ -58,6 +63,8 @@ public class valueStoreImpl {
 			fop.write(data);
 			fop.flush();
 			fop.close();
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
