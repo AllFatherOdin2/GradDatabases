@@ -1,3 +1,14 @@
+/**
+ * A valuestore implementation using multiple files for storage. 
+ * File size is completely dynamic, and is based on the size of the input data
+ */
+
+/**
+ * @author JBosworth
+ * @author DModica
+ *
+ */
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
