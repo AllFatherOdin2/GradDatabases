@@ -19,6 +19,15 @@ import java.io.File;
 import java.util.Arrays;
 
 public class valueStoreImpl {
+	private String dir;
+	
+	public valueStoreImpl(){
+		dir = System.getProperty("user.dir") + "\\";
+	}
+	
+	public valueStoreImpl(String custDir){
+		dir = custDir + "\\";
+	}
 	public static void main(String[] args) throws valueStoreException{
 		get(1);
 		
@@ -43,7 +52,7 @@ public class valueStoreImpl {
 	 * @throws valueStoreException 
 	 */
 	public static byte[] get(int key) throws valueStoreException{
-		final String INPUT_FILE = System.getProperty("user.dir") + "\\" + key + ".txt";
+		final String INPUT_FILE = dir + key + ".txt";
 		
 		byte[] bytes = null;
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
@@ -72,7 +81,7 @@ public class valueStoreImpl {
 	 */
 	public static void remove(int key) throws valueStoreException{
 
-		File entry = new File(System.getProperty("user.dir") + "\\" + key + ".txt");
+		File entry = new File(dir + key + ".txt");
 		
 		if(entry.exists()){
 			entry.delete();
