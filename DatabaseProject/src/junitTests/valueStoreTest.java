@@ -15,7 +15,7 @@ public class ValueStoreTest extends TestCase {
 
 	@Test
 	public void test() {
-		
+		fail("This test failed");
 	}
 
 }
