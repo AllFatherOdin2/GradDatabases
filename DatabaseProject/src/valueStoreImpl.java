@@ -15,7 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.File;
 import java.util.Arrays;
+import java.net.URI;
 
 public class valueStoreImpl {
 	public static void main(String[] args){
@@ -54,12 +56,10 @@ public class valueStoreImpl {
 			System.out.println(Arrays.toString(bytes));
 			
 		} catch(FileNotFoundException e){
-			e.printStackTrace();
+			throw new valueStoreException("No value exists at key: " + key);
 		} catch(IOException e){
 			e.printStackTrace();
 		}
-		
-	
 		
 		return bytes;
 	}
@@ -70,6 +70,7 @@ public class valueStoreImpl {
 	 * @param key Name of file to delete
 	 */
 	public void remove(int key){
+		File entry = new File(URI.parse(System.getProperty("user.dir") + "\\" + key + ".txt"));
 		
 	}
 }
