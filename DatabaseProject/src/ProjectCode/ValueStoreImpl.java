@@ -46,22 +46,18 @@ public class ValueStoreImpl {
 	public void put(int key, byte[] data){
 		File entry;
 		FileOutputStream fop = null;
-		try{
+
 			entry = new File(direct + key +".txt");
-			fop = new FileOutputStream(entry);
-			
-			if(!entry.exists()){
-				//System.out.println("Building new entry");
-				entry.createNewFile();
+			try {
+				fop = new FileOutputStream(entry);
+				
+				fop.write(data);
+				fop.flush();
+				fop.close();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			//else{ System.out.println("Overwritting old entry"); }
-			
-			fop.write(data);
-			fop.flush();
-			fop.close();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 	}
 	
 	/**

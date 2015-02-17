@@ -6,16 +6,16 @@ import ProjectCode.ValueStoreException;
 import ProjectCode.ValueStoreImpl;
 
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import junit.framework.TestCase;
 
 
 public class ValueStoreTest extends TestCase {
+	/*
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
+	*/
 	
 	private static ValueStoreImpl valueStore;
 	private static int intKey;
@@ -30,6 +30,16 @@ public class ValueStoreTest extends TestCase {
 		
 		intKey = 1;
     }
+	
+	@Test
+	public void testPickedDirectory(){
+		String dirTest = System.getProperty("user.dir");
+		valueStore = new ValueStoreImpl(dirTest);
+		
+		assertEquals(valueStore.getWorkingDirectory(), dirTest + "\\");
+		valueStore = new ValueStoreImpl();
+		assertNotSame(valueStore.getWorkingDirectory(), dirTest + "\\");
+	}
 	
 	@Test
 	public void testPutDoesntThrowException() {
@@ -74,9 +84,48 @@ public class ValueStoreTest extends TestCase {
 		if(entry.exists()){
 			entry.delete();
 		}
+
+		String errorMessage = "";
 		
-		exception.expect(ValueStoreException.class);
-		valueStore.get(intKey);
+		//exception.expect(ValueStoreException.class);
+		try{
+			valueStore.get(intKey);
+		}catch(ValueStoreException e){
+			errorMessage = e.getMessage();
+		}
 		
+		assertEquals("No value exists at key: " + intKey, errorMessage);
+	}
+
+	@Test
+	public void testRemoveOnExistingEntry() throws ValueStoreException{
+
+		valueStore.put(intKey, data);
+		valueStore.remove(intKey);
+
+		String errorMessage = "";
+		try{
+			//Get will error because intKey was just removed
+			valueStore.get(intKey);
+		}catch(ValueStoreException e){
+			errorMessage = e.getMessage();
+		}
+		assertEquals("No value exists at key: " + intKey, errorMessage);
+	}
+	
+	@Test
+	public void testRemoveTwiceThrowsError() throws ValueStoreException{
+
+		valueStore.put(intKey, data);
+		valueStore.remove(intKey);
+
+		String errorMessage = "";
+		try{
+			//Get will error because intKey was just removed
+			valueStore.remove(intKey);
+		}catch(ValueStoreException e){
+			errorMessage = e.getMessage();
+		}
+		assertEquals("No value exists at key: " + intKey, errorMessage);
 	}
 }
