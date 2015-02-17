@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.Arrays;
 
 public class valueStoreImpl {
-	private String dir;
+	private static String dir;
 	
 	public valueStoreImpl(){
 		dir = System.getProperty("user.dir") + "\\";
@@ -35,12 +35,30 @@ public class valueStoreImpl {
 	
 	/**
 	 * Will read in data from a byte array, and build a text file containing the data, with the key as the name of the file
+	 * If the file already exists, the data will be erased and overwritten
 	 * 
 	 * @param key Key to write data under
 	 * @param data Data to record
 	 */
 	public void put(int key, byte[] data){
-		
+		File entry;
+		FileOutputStream fop = null;
+		try{
+			entry = new File(dir + key +".txt");
+			fop = new FileOutputStream(entry);
+			
+			if(!entry.exists()){
+				System.out.println("Building new entry");
+				entry.createNewFile();
+			}
+			else{
+				System.out.println("Overwritting old entry");
+			}
+			
+			fop.write(data);
+			fop.flush();
+			fop.close();
+		}
 	}
 	
 	/**
