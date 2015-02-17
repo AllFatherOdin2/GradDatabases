@@ -6,17 +6,18 @@ public class valueStoreImpl {
 	 * @param key Key to write data under
 	 * @param data Data to record
 	 */
-	void put(int key, byte[] data){
+	public void put(int key, byte[] data){
 		
 	}
 	
 	/**
-	 * Will look for a file with the same name as the key, and read the data from it, returning it as a byte[]
+	 * Will look for a file with the same name as the key, 
+	 * and read the data from it, returning it as a byte[]
 	 * 
 	 * @param key File name to search for
 	 * @return Data stored in the text file
 	 */
-	byte[] get(int key){
+	public byte[] get(int key){
 	
 		return null;
 	}
@@ -26,7 +27,9 @@ public class valueStoreImpl {
 	 * 
 	 * @param key Name of file to delete
 	 */
-	void remove(int key){
+	public void remove(int key){
 		
 	}
+	
+	private 
 }
