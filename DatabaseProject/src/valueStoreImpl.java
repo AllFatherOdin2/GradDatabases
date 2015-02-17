@@ -59,6 +59,4 @@ public class valueStoreImpl {
 	public void remove(int key){
 		
 	}
-	
-	private 
 }
