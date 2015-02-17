@@ -41,8 +41,9 @@ public class valueStoreImpl {
 	 * 
 	 * @param key File name to search for
 	 * @return Data stored in the text file
+	 * @throws valueStoreException 
 	 */
-	public static byte[] get(int key){
+	public static byte[] get(int key) throws valueStoreException{
 		final String INPUT_FILE = System.getProperty("user.dir") + "\\" + key + ".txt";
 		
 		byte[] bytes = null;
