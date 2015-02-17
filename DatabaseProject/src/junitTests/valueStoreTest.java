@@ -7,7 +7,7 @@ import org.junit.Test;
 import junit.framework.TestCase;
 
 
-public class valueStoreTest extends TestCase {
+public class ValueStoreTest extends TestCase {
 	@Before
 	public void initialize(){
 		ValueStoreImpl valueStore = new ValueStoreImpl();
