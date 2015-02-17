@@ -28,14 +28,12 @@ public class ValueStoreImpl {
 		direct = custDir + "\\";
 	}
 	
-	public static void main(String[] args) throws ValueStoreException{
-		System.out.println(direct);
-		byte[] data = new byte[2];
-		data[0] = (byte)'a';
-		data[1] = (byte)'c';
-		put(1, data);
-		get(1);
-		
+	/**
+	 * 
+	 * @return the current working directory
+	 */
+	public String getWorkingDirectory(){
+		return direct;
 	}
 	
 	/**
@@ -45,7 +43,7 @@ public class ValueStoreImpl {
 	 * @param key Key to write data under
 	 * @param data Data to record
 	 */
-	public static void put(int key, byte[] data){
+	public void put(int key, byte[] data){
 		File entry;
 		FileOutputStream fop = null;
 		try{
@@ -76,7 +74,7 @@ public class ValueStoreImpl {
 	 * @return Data stored in the text file
 	 * @throws ValueStoreException 
 	 */
-	public static byte[] get(int key) throws ValueStoreException{
+	public byte[] get(int key) throws ValueStoreException{
 		final String INPUT_FILE = direct + key + ".txt";
 		
 		byte[] bytes = null;
@@ -104,7 +102,7 @@ public class ValueStoreImpl {
 	 * @param key Name of file to delete
 	 * @throws ValueStoreException 
 	 */
-	public static void remove(int key) throws ValueStoreException{
+	public void remove(int key) throws ValueStoreException{
 
 		File entry = new File(direct + key + ".txt");
 		

@@ -1,0 +1,11 @@
+import junit.framework.TestCase;
+
+
+public class valueStoreTest extends TestCase {
+
+	@Test
+	public void testConstructValueStore(){
+		valueStoreImpl valueStore = new valueStoreImpl();
+	}
+	
+}

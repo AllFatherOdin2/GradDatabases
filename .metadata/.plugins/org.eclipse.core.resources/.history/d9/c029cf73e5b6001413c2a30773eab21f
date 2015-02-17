@@ -1,0 +1,34 @@
+package JUnitTest;
+import java.io.File;
+
+import ProjectCode.ValueStoreException;
+import ProjectCode.ValueStoreImpl;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import junit.framework.TestCase;
+
+
+public class ValueStoreTest extends TestCase {
+	private ValueStoreImpl valueStore;
+	private int intKey;
+	@Before
+	public void initialize(){
+		valueStore = new ValueStoreImpl();
+	}
+
+	@Test
+	public void testPut() {
+		
+		intKey = 1;
+		File entry = new File(valueStore.getWorkingDirectory() + intKey + ".txt");
+		
+		if(entry.exists()){
+			entry.delete();
+		}
+		
+		
+	}
+
+}
