@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.File;
 import java.util.Arrays;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class valueStoreImpl {
 	public static void main(String[] args) throws valueStoreException{
