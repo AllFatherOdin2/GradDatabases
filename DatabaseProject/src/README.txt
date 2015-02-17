@@ -31,7 +31,11 @@ are used by modern databases, Java does have limits, and cannot compete with the
 especially not while generating the data at the same time. It takes approximately twice as long to delete the same amount of
 data (1,000,000 bytes), but takes over 30 times as long to generate those bytes, write them, and then read them back. This 
 means that it takes approximately 0.13 seconds to read 1,000,000 bytes worth of data, which is quite slow. Unfortunately, we
-used the most efficient Java method we could find, and were unable to increase that speed in any way.
+used the most efficient Java method we could find, and were unable to increase that speed in any way. Going up to 100,000,000 
+bytes does cause Java to run out of memory on the heap, but that is an artificial limit imposed by the language. It can be 
+exceeded, but it takes a lot longer to run. We believe that the overflow is because we were trying to store 200,000,000 bytes 
+of data in memory in order to compare them to each other. However, if we ignore that, we have no problem either writing or 
+reading that much data. The only problem is storing it in Java's limited RAM partition.
 
 
 
