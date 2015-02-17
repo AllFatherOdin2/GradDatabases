@@ -54,9 +54,7 @@ public class ValueStoreImpl {
 				//System.out.println("Building new entry");
 				entry.createNewFile();
 			}
-			else{
-				//System.out.println("Overwritting old entry");
-			}
+			//else{ System.out.println("Overwritting old entry"); }
 			
 			fop.write(data);
 			fop.flush();
@@ -80,12 +78,12 @@ public class ValueStoreImpl {
 		byte[] bytes = null;
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
-			System.out.println("Available bytes from the file: "+inputStream.available());
+			//System.out.println("Available bytes from the file: "+inputStream.available());
 			
 			int bytesread = inputStream.read(bytes);
 			
-			System.out.println("Read Bytes: "+bytesread);
-			System.out.println(Arrays.toString(bytes));
+			//System.out.println("Read Bytes: "+bytesread);
+			//System.out.println(Arrays.toString(bytes));
 			
 		} catch(FileNotFoundException e){
 			throw new ValueStoreException("No value exists at key: " + key);
@@ -108,7 +106,7 @@ public class ValueStoreImpl {
 		
 		if(entry.exists()){
 			entry.delete();
-			System.out.println("Entry Deleted");
+			//System.out.println("Entry Deleted");
 		}
 		else{
 			throw new ValueStoreException("No value exists at key: " + key);
