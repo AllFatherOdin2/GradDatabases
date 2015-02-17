@@ -18,9 +18,10 @@ import java.io.OutputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class valueStoreImpl {
-	public static void main(String[] args){
+	public static void main(String[] args) throws valueStoreException{
 		get(1);
 		
 	}
@@ -69,9 +70,19 @@ public class valueStoreImpl {
 	 * Deletes text file with the same name as the given key
 	 * 
 	 * @param key Name of file to delete
+	 * @throws valueStoreException 
 	 */
-	public void remove(int key){
-		File entry = new File(URI.parse(System.getProperty("user.dir") + "\\" + key + ".txt"));
+	public static void remove(int key) throws valueStoreException{
+
+		File entry = new File(System.getProperty("user.dir") + "\\" + key + ".txt");
+		
+		if(entry.exists()){
+			entry.delete();
+			System.out.println("Entry Deleted");
+		}
+		else{
+			throw new valueStoreException("No value exists at key: " + key);
+		}
 		
 	}
 }
