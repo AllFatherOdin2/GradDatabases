@@ -51,11 +51,11 @@ public class ValueStoreImpl {
 			fop = new FileOutputStream(entry);
 			
 			if(!entry.exists()){
-				System.out.println("Building new entry");
+				//System.out.println("Building new entry");
 				entry.createNewFile();
 			}
 			else{
-				System.out.println("Overwritting old entry");
+				//System.out.println("Overwritting old entry");
 			}
 			
 			fop.write(data);
