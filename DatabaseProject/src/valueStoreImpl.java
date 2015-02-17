@@ -8,23 +8,7 @@ import java.util.Arrays;
 
 public class valueStoreImpl {
 	public static void main(String[] args){
-		final String INPUT_FILE = "C:\\Users\\Helios\\Desktop\\test.txt";
-		
-		
-		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
-			byte[] bytes = new byte[inputStream.available()];
-			System.out.println("Available bytes from the file: "+inputStream.available());
-			
-			int bytesread = inputStream.read(bytes);
-			
-			System.out.println("Read Bytes: "+bytesread);
-			System.out.println(Arrays.toString(bytes));
-			
-		} catch(FileNotFoundException e){
-			e.printStackTrace();
-		} catch(IOException e){
-			e.printStackTrace();
-		}
+		get(1);
 		
 	}
 	
@@ -45,10 +29,28 @@ public class valueStoreImpl {
 	 * @param key File name to search for
 	 * @return Data stored in the text file
 	 */
-	public byte[] get(int key){
+	public static byte[] get(int key){
+		final String INPUT_FILE = System.getProperty("user.dir") + "\\" + key + ".txt";
+		
+		byte[] bytes = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			System.out.println("Available bytes from the file: "+inputStream.available());
+			
+			int bytesread = inputStream.read(bytes);
+			
+			System.out.println("Read Bytes: "+bytesread);
+			System.out.println(Arrays.toString(bytes));
+			
+		} catch(FileNotFoundException e){
+			e.printStackTrace();
+		} catch(IOException e){
+			e.printStackTrace();
+		}
+		
 	
 		
-		return null;
+		return bytes;
 	}
 	
 	/**
