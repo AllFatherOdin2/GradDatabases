@@ -76,15 +76,13 @@ public class ValueStoreImpl {
 			bytes = new byte[inputStream.available()];
 			//System.out.println("Available bytes from the file: "+inputStream.available());
 			
-			int bytesread = inputStream.read(bytes);
+			//int bytesread = inputStream.read(bytes);
 			
 			//System.out.println("Read Bytes: "+bytesread);
 			//System.out.println(Arrays.toString(bytes));
 			
-		} catch(FileNotFoundException e){
-			throw new ValueStoreException("No value exists at key: " + key);
 		} catch(IOException e){
-			e.printStackTrace();
+			throw new ValueStoreException("No value exists at key: " + key);
 		}
 		
 		return bytes;
