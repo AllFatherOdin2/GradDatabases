@@ -20,7 +20,7 @@ public class ValueStoreTest extends TestCase {
 	private static ValueStoreImpl valueStore;
 	private static int intKey;
 	private static byte[] data;
-	private static final int LARGE_DATA_SIZE = 10000000;
+	private static final int LARGE_DATA_SIZE = 100000;
 	
 	@BeforeClass
     public void setUp() {
