@@ -103,7 +103,7 @@ public class ValueStoreImpl {
 			//System.out.println("Entry Deleted");
 		}
 		else{
-			throw new ValueStoreException("No value exists at key: " + key);
+			throw new ValueStoreException();
 		}
 		
 	}

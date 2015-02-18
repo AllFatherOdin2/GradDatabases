@@ -20,6 +20,7 @@ public class ValueStoreTest extends TestCase {
 	private static ValueStoreImpl valueStore;
 	private static int intKey;
 	private static byte[] data;
+	private static final int LARGE_DATA_SIZE = 10000000;
 	
 	@BeforeClass
     public void setUp() {
@@ -126,6 +127,51 @@ public class ValueStoreTest extends TestCase {
 		}catch(ValueStoreException e){
 			errorMessage = e.getMessage();
 		}
-		assertEquals("No value exists at key: " + intKey, errorMessage);
+		assertEquals("The requested key either does not exist or could not be found in the datastore", errorMessage);
+	}
+	
+	@Test
+	public void testPutLargeFile(){
+		intKey = 2;
+		byte[] largeData = new byte[LARGE_DATA_SIZE];
+		for(int i = 0; i < LARGE_DATA_SIZE; i++){
+			largeData[i] = (byte)'a';
+		}
+		
+		valueStore.put(intKey, largeData);
+		
+	}
+	
+	@Test
+	public void testGetLargeFile() throws ValueStoreException{
+		intKey = 2;
+		byte[] largeData = new byte[LARGE_DATA_SIZE];
+		for(int i = 0; i < LARGE_DATA_SIZE; i++){
+			largeData[i] = (byte)'a';
+		}
+		
+		valueStore.put(intKey, largeData);
+		byte[] newData = valueStore.get(intKey);
+		assertNotNull(newData);
+		assertEquals(Arrays.toString(newData), Arrays.toString(largeData));
+		
+	}
+	
+	@Test
+	public void testRemoveLargeFile() throws ValueStoreException{
+		intKey = 2;
+		byte[] largeData = new byte[LARGE_DATA_SIZE];
+		for(int i = 0; i < LARGE_DATA_SIZE; i++){
+			largeData[i] = (byte)'a';
+		}
+		
+		valueStore.put(intKey, largeData);
+		valueStore.remove(intKey);
+	
+		try {
+			valueStore.get(intKey);
+		} catch (ValueStoreException e) {
+			assertEquals("No value exists at key: "+intKey, e.getMessage());
+		}
 	}
 }
