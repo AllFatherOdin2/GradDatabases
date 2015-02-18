@@ -20,7 +20,8 @@ public class ValueStoreTest extends TestCase {
 	private static ValueStoreImpl valueStore;
 	private static int intKey;
 	private static byte[] data;
-	private static final int LARGE_DATA_SIZE = 100000;
+	private static byte[] largeData;
+	private static final int LARGE_DATA_SIZE = 10000000;
 	
 	@BeforeClass
     public void setUp() {
@@ -28,6 +29,11 @@ public class ValueStoreTest extends TestCase {
 		data = new byte[2];
 		data[0] = (byte)'a';
 		data[1] = (byte)'c';
+
+		largeData = new byte[LARGE_DATA_SIZE];
+		for(int i = 0; i < LARGE_DATA_SIZE; i++){
+			largeData[i] = (byte)'a';
+		}
 		
 		intKey = 1;
     }
@@ -131,39 +137,28 @@ public class ValueStoreTest extends TestCase {
 	}
 	
 	@Test
-	public void testPutLargeFile(){
+	public void testPutLargeFile() throws ValueStoreException{
 		intKey = 2;
-		byte[] largeData = new byte[LARGE_DATA_SIZE];
-		for(int i = 0; i < LARGE_DATA_SIZE; i++){
-			largeData[i] = (byte)'a';
-		}
 		
 		valueStore.put(intKey, largeData);
-		
+		//no Error thrown, remove as test order is not always the same
+		valueStore.remove(intKey);
 	}
 	
 	@Test
 	public void testGetLargeFile() throws ValueStoreException{
 		intKey = 2;
-		byte[] largeData = new byte[LARGE_DATA_SIZE];
-		for(int i = 0; i < LARGE_DATA_SIZE; i++){
-			largeData[i] = (byte)'a';
-		}
 		
 		valueStore.put(intKey, largeData);
 		byte[] newData = valueStore.get(intKey);
 		assertNotNull(newData);
 		assertEquals(Arrays.toString(newData), Arrays.toString(largeData));
-		
+		valueStore.remove(intKey);
 	}
 	
 	@Test
 	public void testRemoveLargeFile() throws ValueStoreException{
 		intKey = 2;
-		byte[] largeData = new byte[LARGE_DATA_SIZE];
-		for(int i = 0; i < LARGE_DATA_SIZE; i++){
-			largeData[i] = (byte)'a';
-		}
 		
 		valueStore.put(intKey, largeData);
 		valueStore.remove(intKey);
@@ -174,4 +169,5 @@ public class ValueStoreTest extends TestCase {
 			assertEquals("No value exists at key: "+intKey, e.getMessage());
 		}
 	}
+	
 }

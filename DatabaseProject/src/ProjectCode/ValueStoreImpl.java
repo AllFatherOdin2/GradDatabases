@@ -74,9 +74,10 @@ public class ValueStoreImpl {
 		byte[] bytes = null;
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			//System.out.println(INPUT_FILE);
 			//System.out.println("Available bytes from the file: "+inputStream.available());
 			
-			//int bytesread = inputStream.read(bytes);
 			
 			//System.out.println("Read Bytes: "+bytesread);
 			//System.out.println(Arrays.toString(bytes));
