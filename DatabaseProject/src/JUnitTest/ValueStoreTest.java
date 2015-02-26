@@ -12,10 +12,6 @@ import junit.framework.TestCase;
 
 
 public class ValueStoreTest extends TestCase {
-	/*
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-	*/
 	
 	private static ValueStoreImpl valueStore;
 	private static int intKey;
