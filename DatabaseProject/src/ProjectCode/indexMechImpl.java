@@ -12,21 +12,19 @@ package ProjectCode;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.File;
 import java.util.Arrays;
 
 public class indexMechImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws indexMechException{
 		byte[] bytes = new byte[2];
 		bytes[0] = (byte)'b';
 		bytes[1] = (byte)'q';
-		byteToKeyDatavalue("1`Foo~2`Bar~".getBytes());
+		System.out.println(get("Hello"));
 	}
 	
 	public indexMechImpl(){}
@@ -49,14 +47,47 @@ public class indexMechImpl {
 	 * 
 	 * @param key Key to write data under
 	 * @param data Data to record
+	 * @throws indexMechException 
 	 */
-	public void put(String key, String dataValue){
+	@SuppressWarnings("resource")
+	public static void put(String key, String dataValue) throws indexMechException{
+		final String INPUT_FILE = direct + "indices.txt";
+		
+		byte[] bytes = null;
+		String[][] indexFile = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			indexFile = byteToKeyDatavalue(bytes);
+
+		} catch (IOException e) {
+			//File does not exist, therefore create in next step
+			//which happens anyway
+			indexFile = new String[0][0];
+		}
+		
 		File entry;
 		FileOutputStream fop = null;
 
 			entry = new File(direct + "indices.txt");
 			try {
 				fop = new FileOutputStream(entry);
+				String strToByte = "";
+				for(String[] index : indexFile){
+					if(index[1].compareTo(dataValue) == 0){
+						
+						//restore file to previous state
+						fop.write(bytes);
+						fop.flush();
+						fop.close();
+						throw new indexMechException("Data Value already exists in the indices");
+					}
+					strToByte += index[0] + "`" + index[1] + "~";
+				}
+				strToByte += key + "`" + dataValue + "~";
+				
+				byte[] data = strToByte.getBytes();
 				
 				fop.write(data);
 				fop.flush();
@@ -73,9 +104,9 @@ public class indexMechImpl {
 	 * 
 	 * @param key File name to search for
 	 * @return Data stored in the text file
-	 * @throws ValueStoreException 
+	 * @throws indexMechException 
 	 */
-	public static String get(String dataValue) throws ValueStoreException{
+	public static String get(String dataValue) throws indexMechException{
 		final String INPUT_FILE = direct + "indices.txt";
 		
 		byte[] bytes = null;
@@ -86,12 +117,12 @@ public class indexMechImpl {
 			String[][] indexFile = byteToKeyDatavalue(bytes);
 			
 			for(String[] index : indexFile){
-				if(index[1].equals(dataValue)){
+				if(index[1].compareTo(dataValue) == 0){
 					return index[0];
 				}
 			}
 			
-			throw new ValueStoreException("That Data Value does not exist");
+			throw new indexMechException("That Data Value does not exist");
 			
 			//System.out.println(INPUT_FILE);
 			//System.out.println("Available bytes from the file: "+inputStream.available());
@@ -101,7 +132,7 @@ public class indexMechImpl {
 			//System.out.println(Arrays.toString(bytes));
 			
 		} catch(IOException e){
-			throw new ValueStoreException("No indices have been made");
+			throw new indexMechException("No index file could be found");
 		}
 		
 	}
@@ -110,9 +141,9 @@ public class indexMechImpl {
 	 * Deletes text file with the same name as the given key
 	 * 
 	 * @param key Name of file to delete
-	 * @throws ValueStoreException 
+	 * @throws indexMechException 
 	 */
-	public void remove(int key) throws ValueStoreException{
+	public void remove(int key) throws indexMechException{
 
 		File entry = new File(direct + key + ".txt");
 		
@@ -121,7 +152,7 @@ public class indexMechImpl {
 			//System.out.println("Entry Deleted");
 		}
 		else{
-			throw new ValueStoreException();
+			throw new indexMechException();
 		}
 		
 	}
@@ -149,7 +180,7 @@ public class indexMechImpl {
 		String[][] indexValuePairs = new String[indexPairs.length][2];
 		for(int x = 0; x < indexPairs.length; x++){ //format key`dataValue
 			indexValuePairs[x] = indexPairs[x].split("`");
-			System.out.println(indexValuePairs[x][0] + ": " + indexValuePairs[x][1]);
+			//System.out.println(indexValuePairs[x][0] + ": " + indexValuePairs[x][1]);
 		}
 		return indexValuePairs;
 	}
