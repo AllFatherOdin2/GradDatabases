@@ -22,16 +22,6 @@ import java.util.List;
 public class indexMechImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
 	
-	public static void main(String[] args) throws indexMechException{
-		put("2", "Hello");
-		put("1", "Goodbye");
-		put("1", "Hello");
-		put("1", "Hi");
-		
-		
-		System.out.println(get("Hello"));
-	}
-	
 	public indexMechImpl(){}
 	
 	public indexMechImpl(String custDir){
@@ -54,8 +44,7 @@ public class indexMechImpl {
 	 * @param data Data to record
 	 * @throws indexMechException 
 	 */
-	@SuppressWarnings("resource")
-	public static void put(String key, String dataValue) throws indexMechException{
+	public void put(String key, String dataValue) throws indexMechException{
 		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		
 		byte[] bytes = null;
@@ -94,15 +83,6 @@ public class indexMechImpl {
 				e.printStackTrace();
 			}
 	}
-	
-	private static String hash(String dataValue) {
-		
-		int hash = 19;
-		for (int i = 0; i < dataValue.length(); i++){
-			hash = hash * 53 + (int)dataValue.charAt(i);
-		}
-		return ""+hash;
-	}
 
 	/**
 	 * Will look for a file with the same name as the key, 
@@ -112,7 +92,7 @@ public class indexMechImpl {
 	 * @return Data stored in the text file
 	 * @throws indexMechException 
 	 */
-	public static List<String> get(String dataValue) throws indexMechException{
+	public List<String> get(String dataValue) throws indexMechException{
 		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		
 		byte[] bytes = null;
@@ -156,16 +136,42 @@ public class indexMechImpl {
 	 */
 	public void remove(String dataValue) throws indexMechException{
 
-		File entry = new File(direct + "index" + hash(dataValue) + ".txt");
+		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
+		
+		byte[] bytes = null;
+		List<String[]> notDataValue = new ArrayList<String[]>();
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			String[][] indexFile = byteToKeyDatavalue(bytes);
+			
+			for(String[] index : indexFile){
+				if(index[1].compareTo(dataValue) != 0){
+					notDataValue.add(index);
+				}
+			}
+			
+			//throw new indexMechException("That Data Value does not exist");
+			
+			
+		} catch(IOException e){
+			throw new indexMechException("No index file could be found");
+		}
+
+		
+		File entry = new File(INPUT_FILE);
 		
 		if(entry.exists()){
 			entry.delete();
-			//System.out.println("Entry Deleted");
+			
+			for(String[] record : notDataValue){
+				put(record[0],record[1]);
+			}
 		}
 		else{
 			throw new indexMechException();
 		}
-		
 	}
 	
 	private static String byteToStringArray(byte[] data){
@@ -191,8 +197,16 @@ public class indexMechImpl {
 		String[][] indexValuePairs = new String[indexPairs.length][2];
 		for(int x = 0; x < indexPairs.length; x++){ //format key`dataValue
 			indexValuePairs[x] = indexPairs[x].split("`");
-			//System.out.println(indexValuePairs[x][0] + ": " + indexValuePairs[x][1]);
 		}
 		return indexValuePairs;
+	}
+	
+	private static String hash(String dataValue) {
+		
+		int hash = 19;
+		for (int i = 0; i < dataValue.length(); i++){
+			hash = hash * 53 + (int)dataValue.charAt(i);
+		}
+		return ""+hash;
 	}
 }
