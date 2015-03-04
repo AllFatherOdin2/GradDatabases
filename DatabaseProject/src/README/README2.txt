@@ -7,6 +7,7 @@ Assumptions:
 -Index entries will be "comma-separated", using "`" between the key and the datavalue, and a "~" between separate entries.
 -Entries in index are sorted alphabetically by datavalue, rather than by key
 -There are many keys that can be pointed to by a datavalue.
+-All keys will be unique
 
 
 Decisions to Make

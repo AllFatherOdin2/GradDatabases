@@ -102,7 +102,11 @@ public class indexMechImpl {
 	
 	private static String hash(String dataValue) {
 		
-		return dataValue;
+		int hash = 19;
+		for (int i = 0; i < dataValue.length(); i++){
+			hash = hash * 53 + (int)dataValue.charAt(i);
+		}
+		return ""+hash;
 	}
 
 	/**
