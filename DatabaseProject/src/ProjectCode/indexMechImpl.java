@@ -29,6 +29,7 @@ public class indexMechImpl {
 	}
 	
 	/**
+	 * Getter Function
 	 * 
 	 * @return the current working directory
 	 */
@@ -40,8 +41,8 @@ public class indexMechImpl {
 	 * Will read in data from a byte array, and build a text file containing the data, with the key as the name of the file
 	 * If the file already exists, the data will be erased and overwritten
 	 * 
-	 * @param key Key to write data under
-	 * @param data Data to record
+	 * @param key rid used for counting records
+	 * @param dataValue Data is used in a hash function, which returns value of "bucket" to put key-datavalue pair in.
 	 * @throws indexMechException 
 	 */
 	public void put(String key, String dataValue) throws indexMechException{
@@ -88,8 +89,8 @@ public class indexMechImpl {
 	 * Will look for a file with the same name as the key, 
 	 * and read the data from it, returning it as a byte[]
 	 * 
-	 * @param key File name to search for
-	 * @return Data stored in the text file
+	 * @param dataValue Datavalue to search for in a file based on hashed value
+	 * @return Key stored in the text file associated with given datavalue
 	 * @throws indexMechException 
 	 */
 	public List<String> get(String dataValue) throws indexMechException{
@@ -131,7 +132,7 @@ public class indexMechImpl {
 	/**
 	 * Deletes text file with the same name as the given key
 	 * 
-	 * @param key Name of file to delete
+	 * @param dataValue Datavalue that is going to be deleted from a given bucket
 	 * @throws indexMechException 
 	 */
 	public void remove(String dataValue) throws indexMechException{
@@ -174,6 +175,33 @@ public class indexMechImpl {
 		}
 	}
 	
+	/**
+	 * This function is used to convert a byte array into a 2D String array
+	 * This is necessary because the indexed records are stored as a single string of text, and need to be split
+	 * apart before they can be used
+	 * 
+	 * @param data The byte array to split into strings
+	 * @return
+	 */
+	private static String[][] byteToKeyDatavalue(byte[] data){
+		String str = byteToStringArray(data);
+		String[] indexPairs = str.split("~"); //prior format key`dataValue~ (repeat)
+		
+		String[][] indexValuePairs = new String[indexPairs.length][2];
+		for(int x = 0; x < indexPairs.length; x++){ //format key`dataValue
+			indexValuePairs[x] = indexPairs[x].split("`");
+		}
+		return indexValuePairs;
+	}
+	
+	/**
+	 * Helper function for byteToKeyDatavalue()
+	 * Splits a byte array into a String using String.split()
+	 * Byte array is formated using Arrays.toString() to create a CSV string that can be split on the sequence ", "
+	 * 
+	 * @param data Byte array to split into a string
+	 * @return
+	 */
 	private static String byteToStringArray(byte[] data){
 		String result = Arrays.toString(data);
 		//Will be in array form, so this removes "[" and "]"
@@ -190,17 +218,12 @@ public class indexMechImpl {
 		return result;
 	}
 	
-	private static String[][] byteToKeyDatavalue(byte[] data){
-		String str = byteToStringArray(data);
-		String[] indexPairs = str.split("~"); //prior format key`dataValue~ (repeat)
-		
-		String[][] indexValuePairs = new String[indexPairs.length][2];
-		for(int x = 0; x < indexPairs.length; x++){ //format key`dataValue
-			indexValuePairs[x] = indexPairs[x].split("`");
-		}
-		return indexValuePairs;
-	}
-	
+	/**
+	 * Simple hash function to sort datavalues into buckets
+	 * 
+	 * @param dataValue Value to be hashed
+	 * @return
+	 */
 	private static String hash(String dataValue) {
 		
 		int hash = 19;
