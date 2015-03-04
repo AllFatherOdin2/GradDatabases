@@ -102,7 +102,7 @@ public class indexMechImpl {
 	
 	private static String hash(String dataValue) {
 		
-		return null;
+		return dataValue;
 	}
 
 	/**
