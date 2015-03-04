@@ -15,7 +15,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class indexMechImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
@@ -70,7 +72,7 @@ public class indexMechImpl {
 		File entry;
 		FileOutputStream fop = null;
 
-			entry = new File(direct + "indices.txt");
+			entry = new File(direct + "index" + hash(dataValue) + ".txt");
 			try {
 				fop = new FileOutputStream(entry);
 				String strToByte = "";
@@ -98,6 +100,11 @@ public class indexMechImpl {
 			}
 	}
 	
+	private static String hash(String dataValue) {
+		
+		return null;
+	}
+
 	/**
 	 * Will look for a file with the same name as the key, 
 	 * and read the data from it, returning it as a byte[]
@@ -106,10 +113,11 @@ public class indexMechImpl {
 	 * @return Data stored in the text file
 	 * @throws indexMechException 
 	 */
-	public static String get(String dataValue) throws indexMechException{
+	public static List<String> get(String dataValue) throws indexMechException{
 		final String INPUT_FILE = direct + "indices.txt";
 		
 		byte[] bytes = null;
+		List<String> result = new ArrayList<String>();
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
@@ -118,8 +126,12 @@ public class indexMechImpl {
 			
 			for(String[] index : indexFile){
 				if(index[1].compareTo(dataValue) == 0){
-					return index[0];
+					result.add(index[0]);
 				}
+			}
+			
+			if(result.size() > 0){
+				return result;
 			}
 			
 			throw new indexMechException("That Data Value does not exist");
