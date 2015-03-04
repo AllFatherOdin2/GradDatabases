@@ -23,9 +23,12 @@ public class indexMechImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
 	
 	public static void main(String[] args) throws indexMechException{
-		byte[] bytes = new byte[2];
-		bytes[0] = (byte)'b';
-		bytes[1] = (byte)'q';
+		put("2", "Hello");
+		put("1", "Goodbye");
+		put("1", "Hello");
+		put("1", "Hi");
+		
+		
 		System.out.println(get("Hello"));
 	}
 	
@@ -53,7 +56,7 @@ public class indexMechImpl {
 	 */
 	@SuppressWarnings("resource")
 	public static void put(String key, String dataValue) throws indexMechException{
-		final String INPUT_FILE = direct + "indices.txt";
+		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		
 		byte[] bytes = null;
 		String[][] indexFile = null;
@@ -77,14 +80,6 @@ public class indexMechImpl {
 				fop = new FileOutputStream(entry);
 				String strToByte = "";
 				for(String[] index : indexFile){
-					if(index[1].compareTo(dataValue) == 0){
-						
-						//restore file to previous state
-						fop.write(bytes);
-						fop.flush();
-						fop.close();
-						throw new indexMechException("Data Value already exists in the indices");
-					}
 					strToByte += index[0] + "`" + index[1] + "~";
 				}
 				strToByte += key + "`" + dataValue + "~";
@@ -118,7 +113,7 @@ public class indexMechImpl {
 	 * @throws indexMechException 
 	 */
 	public static List<String> get(String dataValue) throws indexMechException{
-		final String INPUT_FILE = direct + "indices.txt";
+		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		
 		byte[] bytes = null;
 		List<String> result = new ArrayList<String>();
@@ -159,9 +154,9 @@ public class indexMechImpl {
 	 * @param key Name of file to delete
 	 * @throws indexMechException 
 	 */
-	public void remove(int key) throws indexMechException{
+	public void remove(String dataValue) throws indexMechException{
 
-		File entry = new File(direct + key + ".txt");
+		File entry = new File(direct + "index" + hash(dataValue) + ".txt");
 		
 		if(entry.exists()){
 			entry.delete();
