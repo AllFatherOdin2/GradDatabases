@@ -48,6 +48,18 @@ public class indexMechImpl {
 	public void put(String key, String dataValue) throws indexMechException{
 		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		
+		boolean doopFlag = false;
+		
+		try{
+			List<String> gottenResult = this.get(dataValue);
+			
+			doopFlag = gottenResult.contains(key);
+		}catch(Exception e){}
+		
+		if(doopFlag){
+			throw new indexMechException("The Datavalue already indexes this key");
+		}
+		
 		byte[] bytes = null;
 		String[][] indexFile = null;
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
@@ -169,9 +181,6 @@ public class indexMechImpl {
 			for(String[] record : notDataValue){
 				put(record[0],record[1]);
 			}
-		}
-		else{
-			throw new indexMechException();
 		}
 	}
 	
