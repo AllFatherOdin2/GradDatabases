@@ -1,5 +1,27 @@
 package ProjectCode;
+/**
+ * A custom exception class for our datastore implementation
+ */
 
-public class QueryExecException {
-
+/**
+ * @author JBosworth
+ * @author DModica
+ *
+ */
+public class QueryExecException extends Exception {
+	/**
+	 * Default constructor.
+	 */
+	public QueryExecException(){
+		super("The requested key either does not exist or could not be found in the datastore");
+	}
+	
+	/**
+	 * Passes a custom message in for the exception
+	 * 
+	 * @param msg Custom message to return in exception
+	 */
+	public QueryExecException(String msg){
+		super(msg);
+	}
 }
