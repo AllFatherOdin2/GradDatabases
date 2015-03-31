@@ -21,16 +21,32 @@ public class QueryExecImpl {
 		final String INPUT_FILE_CITY = direct + "city.csv";
 		final String INPUT_FILE_COUNTRY = direct + "country.csv";
 		
-		byte[] bytes = null;
+		byte[] cityBytes = null;
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE_CITY)){
-			bytes = new byte[inputStream.available()];
-			inputStream.read(bytes);
-			cities = convertByteArrayto2DList(bytes);
+			cityBytes = new byte[inputStream.available()];
+			inputStream.read(cityBytes);
+			cities = convertByteArrayto2DList(cityBytes);
 			
 			throw new QueryExecException("That Data Value does not exist");
 			
 		} catch(IOException e){
-			throw new QueryExecException("No city CSV could be found");
+			if(cities.size() == 0){
+				throw new QueryExecException("No city CSV could be found");
+			}
+		}
+		
+		byte[] countryBytes = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE_COUNTRY)){
+			countryBytes = new byte[inputStream.available()];
+			inputStream.read(countryBytes);
+			countries = convertByteArrayto2DList(countryBytes);
+			
+			throw new QueryExecException("That Data Value does not exist");
+			
+		} catch(IOException e){
+			if (countries.size() == 0){
+				throw new QueryExecException("No city CSV could be found");
+			}
 		}
 	}
 	
