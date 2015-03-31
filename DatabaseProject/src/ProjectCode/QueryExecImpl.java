@@ -9,10 +9,14 @@ import java.util.List;
 
 public class QueryExecImpl {
 	private static final String direct = System.getProperty("user.dir") + "\\";
-	private static List<List<String>> cities;
-	private static List<List<String>> countries;
-	private static List<String> results;
+	private static List<List<String>> cities = new ArrayList<List<String>>();
+	private static List<List<String>> countries = new ArrayList<List<String>>();
+	private static List<String> results = new ArrayList<String>();
 
+	public static void main(String args[]) throws QueryExecException{
+		open();
+	}
+	
 	/**
 	 * Default constructor
 	 */
@@ -83,9 +87,12 @@ public class QueryExecImpl {
 
 		List<List<String>> resultList = new ArrayList<List<String>>();
 		for(String s: resultArray){
+			s = s.substring(0, s.length()-1); //remove new line character
 			String[] columnArray = s.split(",");
 			for(int i = 0; i < columnArray.length; i++){
-				columnArray[i] = columnArray[i].substring(1, columnArray[i].length() - 1);
+				if(columnArray[i].length() > 0){
+					columnArray[i] = columnArray[i].substring(1, columnArray[i].length() - 1);
+				}
 			}
 			
 			resultList.add(new ArrayList(Arrays.asList(columnArray)));
@@ -104,6 +111,12 @@ public class QueryExecImpl {
 			for (List<String> country : countries){
 				String code = country.get(0);
 				if (countryCode.compareTo(code) == 0){
+					
+					if(country.get(6).equals("UL") || city.get(4).equals("UL")){ 
+						//If either country or city population == null
+						continue;
+					}
+					
 					int countryPop = Integer.parseInt(country.get(6));
 					int cityPop = Integer.parseInt(city.get(4));
 					if(cityPop > .4 * countryPop){
@@ -119,6 +132,7 @@ public class QueryExecImpl {
 	}
 	
 	public static void close(){
+		System.out.println(results.size());
 		for(String city : results){
 			System.out.println(city);
 		}
