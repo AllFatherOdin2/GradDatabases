@@ -14,3 +14,5 @@ How open() Works
 	list is then split again on the , character, leaving a list of lists of strings, with each string being an individual
 	field in a tuple. However, we still have quotes in each string, so we have to remove those manually in order to get the
 	correct values out of the function.
+	
+How 

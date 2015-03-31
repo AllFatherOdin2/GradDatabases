@@ -57,6 +57,7 @@ public class QueryExecImpl {
 		} catch(IOException e){
 			throw new QueryExecException("No city CSV could be found");
 		}
+		getNext();
 	}
 	
 	/**
@@ -114,10 +115,18 @@ public class QueryExecImpl {
 		if(results.size() == 0){
 			throw new QueryExecException("No matches were found.");
 		}
+		close();
 	}
 	
 	public static void close(){
-		
+		for(String city : results){
+			System.out.println(city);
+		}
+		cities = null;
+		countries = null;
+		results = null;
 	}
+	
+	
 	
 }
