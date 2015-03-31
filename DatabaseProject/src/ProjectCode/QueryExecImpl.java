@@ -8,15 +8,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class QueryExecImpl {
-	private static String direct = System.getProperty("user.dir") + "\\";
+	private static final String direct = System.getProperty("user.dir") + "\\";
 	private static List<List<String>> cities;
 	private static List<List<String>> countries;
+	private static List<String> results;
 
+	/**
+	 * Default constructor
+	 */
 	public QueryExecImpl() {
 		cities = new ArrayList<List<String>>();
 		countries = new ArrayList<List<String>>();
+		results = new ArrayList<String>();
 	}
 	
+	/**
+	 * Opens the two data-table CSV files and reads them into memory
+	 * @throws QueryExecException
+	 */
 	public static void open() throws QueryExecException{
 		final String INPUT_FILE_CITY = direct + "city.csv";
 		final String INPUT_FILE_COUNTRY = direct + "country.csv";
@@ -50,6 +59,12 @@ public class QueryExecImpl {
 		}
 	}
 	
+	/**
+	 * Converts a byte array into a list of lists of strings in CSV format.
+	 * 
+	 * @param data Input byte array
+	 * @return List of tuples, which are lists of strings.
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static List<List<String>> convertByteArrayto2DList(byte[] data) {
 		String result = Arrays.toString(data);
@@ -78,8 +93,27 @@ public class QueryExecImpl {
 		return resultList;
 	}
 
-	public static void getNext(){
-		
+	/**
+	 * Gets a list of all cities whose population is > .4 * their countries population.
+	 * @throws QueryExecException 
+	 */
+	public static void getNext() throws QueryExecException{
+		for(List<String> city : cities){
+			String countryCode = city.get(2);
+			for (List<String> country : countries){
+				String code = country.get(0);
+				if (countryCode.compareTo(code) == 0){
+					int countryPop = Integer.parseInt(country.get(6));
+					int cityPop = Integer.parseInt(city.get(4));
+					if(cityPop > .4 * countryPop){
+						results.add(city.get(1));
+					}
+				}
+			}
+		}
+		if(results.size() == 0){
+			throw new QueryExecException("No matches were found.");
+		}
 	}
 	
 	public static void close(){
