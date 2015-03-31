@@ -15,4 +15,13 @@ How open() Works
 	field in a tuple. However, we still have quotes in each string, so we have to remove those manually in order to get the
 	correct values out of the function.
 	
-How 
+How getNext() works
+	Using the two buffers generated in the open() function, we can iterate through all of the city tuples. At each tuple, we
+	compare the Country Code to the Code of each country, and if the two match, we compare the size of the populations of
+	the country and city. If the city population is greater than .4 of the country population, the city name is added to a 
+	result list. Once all of the countries are checked, the next city is selected and the process repeats. Once all cities
+	have been run through, the list of names is saved in another buffer, and getNext() calls close().
+	
+How close() works
+	This function is quite simple. Its only purpose is to print out the result list, and then null all three buffers, freeing
+	the space for use later.
