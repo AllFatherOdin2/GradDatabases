@@ -28,7 +28,7 @@ public class QueryExecImpl {
 			cities = convertByteArrayto2DList(cityBytes);
 
 			if(cities.size() == 0){
-				throw new QueryExecException("That Data Value does not exist");
+				throw new QueryExecException("That Data table is empty");
 			}
 			
 		} catch(IOException e){
@@ -42,7 +42,7 @@ public class QueryExecImpl {
 			countries = convertByteArrayto2DList(countryBytes);
 
 			if (countries.size() == 0){
-				throw new QueryExecException("That Data Value does not exist");
+				throw new QueryExecException("That Data table is empty");
 			}
 			
 		} catch(IOException e){
