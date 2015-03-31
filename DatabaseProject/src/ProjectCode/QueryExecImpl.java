@@ -26,13 +26,13 @@ public class QueryExecImpl {
 			cityBytes = new byte[inputStream.available()];
 			inputStream.read(cityBytes);
 			cities = convertByteArrayto2DList(cityBytes);
-			
-			throw new QueryExecException("That Data Value does not exist");
+
+			if(cities.size() == 0){
+				throw new QueryExecException("That Data Value does not exist");
+			}
 			
 		} catch(IOException e){
-			if(cities.size() == 0){
-				throw new QueryExecException("No city CSV could be found");
-			}
+			throw new QueryExecException("No city CSV could be found");
 		}
 		
 		byte[] countryBytes = null;
@@ -40,13 +40,13 @@ public class QueryExecImpl {
 			countryBytes = new byte[inputStream.available()];
 			inputStream.read(countryBytes);
 			countries = convertByteArrayto2DList(countryBytes);
-			
-			throw new QueryExecException("That Data Value does not exist");
+
+			if (countries.size() == 0){
+				throw new QueryExecException("That Data Value does not exist");
+			}
 			
 		} catch(IOException e){
-			if (countries.size() == 0){
-				throw new QueryExecException("No city CSV could be found");
-			}
+			throw new QueryExecException("No city CSV could be found");
 		}
 	}
 	
