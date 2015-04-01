@@ -6,32 +6,26 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class QueryExecImpl {
 	private static final String direct = System.getProperty("user.dir") + "\\";
 	private static List<List<String>> cities = new ArrayList<List<String>>();
 	private static List<List<String>> countries = new ArrayList<List<String>>();
 	private static List<String> results = new ArrayList<String>();
-
-	public static void main(String args[]) throws QueryExecException{
-		open();
-	}
+	
+	private static double queryTime = 0;
 	
 	/**
 	 * Default constructor
 	 */
 	public QueryExecImpl() {
-		cities = new ArrayList<List<String>>();
-		countries = new ArrayList<List<String>>();
-		results = new ArrayList<String>();
 	}
 	
 	/**
 	 * Opens the two data-table CSV files and reads them into memory
 	 * @throws QueryExecException
 	 */
-	public static void open() throws QueryExecException{
+	public List<String> open() throws QueryExecException{
 		final String INPUT_FILE_CITY = direct + "city.csv";
 		final String INPUT_FILE_COUNTRY = direct + "country.csv";
 		
@@ -62,7 +56,14 @@ public class QueryExecImpl {
 		} catch(IOException e){
 			throw new QueryExecException("No city CSV could be found");
 		}
-		getNext();
+
+
+		double startTime = System.nanoTime();
+		List<String> result = getNext();
+		double endTime = System.nanoTime();
+		setQueryTime((endTime-startTime)/1000000000);
+		
+		return result;
 	}
 	
 	/**
@@ -72,7 +73,7 @@ public class QueryExecImpl {
 	 * @return List of tuples, which are lists of strings.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static List<List<String>> convertByteArrayto2DList(byte[] data) {
+	private List<List<String>> convertByteArrayto2DList(byte[] data) {
 		String result = Arrays.toString(data);
 		//Will be in array form, so this removes "[" and "]"
 		result = result.substring(1, result.length()-1); 
@@ -108,7 +109,7 @@ public class QueryExecImpl {
 	 * Gets a list of all cities whose population is > .4 * their countries population.
 	 * @throws QueryExecException 
 	 */
-	public static void getNext() throws QueryExecException{
+	private List<String> getNext() throws QueryExecException{
 		for(List<String> city : cities){
 			String countryCode = city.get(2);
 			for (List<String> country : countries){
@@ -126,17 +127,30 @@ public class QueryExecImpl {
 		if(results.size() == 0){
 			throw new QueryExecException("No matches were found.");
 		}
-		close();
+		return close();
 	}
 	
-	public static void close(){
+	private List<String> close(){
+		/*
 		System.out.println(results.size());
 		for(String city : results){
 			System.out.println(city);
 		}
+		*/
+		List<String> tempResults = results;
 		cities = null;
 		countries = null;
 		results = null;
+		return tempResults;
+		
+	}
+
+	public double getQueryTime() {
+		return queryTime;
+	}
+
+	public static void setQueryTime(double queryTime) {
+		QueryExecImpl.queryTime = queryTime;
 	}
 	
 	
