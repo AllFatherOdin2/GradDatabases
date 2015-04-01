@@ -3,7 +3,7 @@ David Modica
 CS 542 - Database Management Systems
 
 Assumptions
--Data is inserted using standard CSV format. Ex. "value","value","value"\n
+-Data is inserted using standard CSV format. Ex. "value",NULL,"value"\n
 -CSV files are stored in the same directory as the program
 -Both CSV files fit in memory
 
