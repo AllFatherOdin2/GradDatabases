@@ -18,6 +18,7 @@ public class QueryExecTest extends TestCase {
 		assertEquals(results.size(), 18);
 		assertTrue(queryExec.getQueryTime() > 0);
 		System.out.println("Elapsed Query Time: " + queryExec.getQueryTime());
+		System.out.println();
 		for(String result: results){
 			System.out.println(result);
 		}
