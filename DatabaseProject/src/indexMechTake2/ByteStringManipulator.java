@@ -2,6 +2,7 @@ package indexMechTake2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import ProjectCode.indexMechException;
@@ -32,7 +33,7 @@ public class ByteStringManipulator {
 			//prior format index`key1~key2~...~key10
 			String[] keyArray = indexArray[1].split("~"); //
 			
-			List<String> keys = Arrays.asList(keyArray);
+			List<String> keys = new LinkedList<String>(Arrays.asList(keyArray));
 			
 			buckets.add(new Bucket(index, keys));
 		}
@@ -60,7 +61,7 @@ public class ByteStringManipulator {
 		for(String s : resultArray){
 			result += (char)Integer.parseInt(s);
 		}
-		
+			
 		return result;
 	}
 	

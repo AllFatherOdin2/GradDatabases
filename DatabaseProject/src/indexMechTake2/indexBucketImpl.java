@@ -16,13 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import ProjectCode.indexMechException;
 
 public class indexBucketImpl {
@@ -30,24 +24,28 @@ public class indexBucketImpl {
 	private static String next = "";
 	
 	public static void main(String[] args) throws indexMechException{
-		/*
+
 		put("KeyTest", "DataValueTest");
 		put("Key2Test", "DataValueTest");
 		
-		put("testKey", "testDataValue");
-		put("testKey2", "testDataValue");
+		put("testKey", "DataValueTest");
+		put("testKey2", "DataValueTest");
 		
-		put("KeyXTest", "ValueDataTest");
-		put("KeyX2Test", "ValueDataTest");
-		*/
+		put("KeyWTest", "DataValueTest");
+		put("KeyW2Test", "DataValueTest");
 		
-		List<String> keys = get("ValueDataTest");
-		System.out.println(keys.toString());
+		put("KeyXTest", "DataValueTest");
+		put("KeyX2Test", "DataValueTest");
+		
+		put("KeyYTest", "DataValueTest");
+		put("KeyY2Test", "DataValueTest");
+		
 
-		keys = get("testDataValue");
-		System.out.println(keys.toString());
-
-		keys = get("DataValueTest");
+		put("overflow", "DataValueTest");
+		put("overflow2", "DataValueTest");
+		put("overflow3", "DataValueTest");
+		
+		List<String> keys = get("DataValueTest");
 		System.out.println(keys.toString());
 	}
 	
@@ -67,17 +65,32 @@ public class indexBucketImpl {
 		final String OVERFLOW_TITLE = "overflow";
 		final String hashedValue = hash(dataValue);
 		boolean updateNext = false;
+		boolean keyAdded = false;
+		Bucket newBucket = null;
 		
 		byte[] bytes = null;
 		List<Bucket> buckets = null;
+		Bucket overflowBucket = null;
 		
 		
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			buckets = ByteStringManipulator.byteToBucket(bytes);
-
+			if(bytes.length <= 0){
+				buckets = new ArrayList<Bucket>();
+			}
+			else{
+				buckets = ByteStringManipulator.byteToBucket(bytes);
+				
+				//get last element, to check if it is overflow
+				Bucket possibleOverflow = buckets.get(buckets.size()-1); 
+				if(possibleOverflow.getIndex().equals(OVERFLOW_TITLE)){
+					overflowBucket = possibleOverflow;
+					overflowBucket.setToOverflow(); //just in case
+					buckets.remove(buckets.size()-1); //Remove overflow bucket from major list to add to end later
+				}
+			}
 		} catch (IOException e) {
 			//File does not exist, therefore create
 			buckets = new ArrayList<Bucket>();
@@ -93,29 +106,50 @@ public class indexBucketImpl {
 				//if index file exists, find where to put this new item
 				for(Bucket bucket : buckets){
 					//update next if needed
-					if(next.length() <= 0 || updateNext){
+					if((next.length() <= 0 || updateNext) && !bucket.getIndex().equals(next)){
 						next = hashedValue;
 						updateNext = false;
+					}
+					
+					if(keyAdded){
+						break;
 					}
 					
 					if(bucket.isCorrectBucket(hashedValue)){
 						try {
 							bucket.addKey(key);
+							keyAdded = true;
 						} catch (BucketOverflowException e) {
-							//This bucket is the next one to be overflowed, so allow it to.
+							//This bucket is the next one to be split, so allow it to.
 							if(next.equals(bucket.getIndex())){
 								updateNext = true;
 								//Create new List of keys
 								List<String> tempList = new ArrayList<String>();
 								tempList.add(key);
 								//Create new Bucket with the same hash Value, but this new key
-								Bucket newBucket = new Bucket(hashedValue, tempList);
-								//Add bucket to overall List
-								buckets.add(newBucket);
+								newBucket = new Bucket(hashedValue, tempList);
 							}
 							//This bucket is not next, therefore add this to overflow.
 							else{
-								//TODO make overflow a thing.
+								if(overflowBucket == null){
+									//the overflow bucket does not exist
+									
+									//Create new List of keys
+									List<String> tempList = new ArrayList<String>();
+									tempList.add(key);
+									overflowBucket = new Bucket(OVERFLOW_TITLE, tempList);
+									overflowBucket.setToOverflow();
+									keyAdded = true;
+								}
+								else{
+									//the bucket already exists
+									try {
+										overflowBucket.addKey(key);
+										keyAdded = true;
+									} catch (BucketOverflowException | BucketFilledException e1) {
+										e1.printStackTrace();
+									}
+								}
 							}
 						} catch(BucketFilledException e){
 							//This bucket is filled, but another bucket of the same hash should exist elsewhere
@@ -125,22 +159,35 @@ public class indexBucketImpl {
 					}
 				}
 			}
-			else{
-				//If index file does not exist, create it with this entry.
+			
+			//if the data hasnt been added to a bucket yet, add it. 
+			//And the key hasnt been added to a bucket
+			if(newBucket == null && !keyAdded){
 				List<String> tempList = new ArrayList<String>();
 				tempList.add(key);
-				Bucket tempBucket = new Bucket(hashedValue, tempList);
-				buckets.add(tempBucket);
+				
+				newBucket = new Bucket(hashedValue, tempList);
+			}
+			
+			if(newBucket != null){
+				//add the new bucket to the list
+				buckets.add(newBucket);
 			}
 
-			
+			//If overflow bucket exists, tack it on to bucket array again.
+			if(overflowBucket != null){
+				buckets.add(overflowBucket);
+			}
 			
 			//Write buckets to index File
 			String strToByte = "";
 			for(Bucket bucket:buckets){
 				strToByte += bucket.toString() + "\n";
 			}
+			
 			strToByte = strToByte.substring(0, strToByte.length()-1); //remove extra new line
+			
+			
 			byte[] data = strToByte.getBytes();
 			
 			fop.write(data);
@@ -169,14 +216,12 @@ public class indexBucketImpl {
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			HashMap<String, List<String>> indexFile = byteToKeyDatavalue(bytes);
+			List<Bucket> buckets = ByteStringManipulator.byteToBucket(bytes);
 			
-			Iterator<Entry<String, List<String>>> entries = indexFile.entrySet().iterator();
-			while(entries.hasNext()){
-				Map.Entry<String, List<String>> bucket = entries.next();
+			for(Bucket bucket : buckets){
 				
-				if(bucket.getKey().compareTo(hash(dataValue)) == 0){
-					result = bucket.getValue();
+				if(bucket.getIndex().compareTo(hash(dataValue)) == 0){
+					result = bucket.getKeys();
 				}
 			}
 			
@@ -185,13 +230,6 @@ public class indexBucketImpl {
 			}
 			
 			throw new indexMechException("That Data Value does not exist");
-			
-			//System.out.println(INPUT_FILE);
-			//System.out.println("Available bytes from the file: "+inputStream.available());
-			
-			
-			//System.out.println("Read Bytes: "+bytesread);
-			//System.out.println(Arrays.toString(bytes));
 			
 		} catch(IOException e){
 			throw new indexMechException("No index file could be found");
@@ -208,20 +246,18 @@ public class indexBucketImpl {
 	public void remove(String dataValue) throws indexMechException{
 
 		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
-		
+
 		byte[] bytes = null;
-		List<String[]> notDataValue = new ArrayList<String[]>();
+		List<String> result = new ArrayList<String>();
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			HashMap<String, List<String>> indexFile = byteToKeyDatavalue(bytes);
+			List<Bucket> buckets = ByteStringManipulator.byteToBucket(bytes);
 			
-			Iterator<Entry<String, List<String>>> entries = indexFile.entrySet().iterator();
-			while(entries.hasNext()){
-				Map.Entry<String, List<String>> bucket = entries.next();
+			for(Bucket bucket : buckets){
 				
-				if(bucket.getKey().compareTo(hash(dataValue)) == 0){
+				if(bucket.getIndex().compareTo(hash(dataValue)) == 0){
 					//notDataValue = bucket.getValue();
 				}
 			}
@@ -238,10 +274,11 @@ public class indexBucketImpl {
 		
 		if(entry.exists()){
 			entry.delete();
-			
+			/*
 			for(String[] record : notDataValue){
 				put(record[0],record[1]);
 			}
+			*/
 		}
 	}
 	

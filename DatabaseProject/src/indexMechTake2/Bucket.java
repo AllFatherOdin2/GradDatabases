@@ -3,7 +3,7 @@ package indexMechTake2;
 import java.util.List;
 
 public class Bucket {
-	final int MAX_BUCKET_SIZE = 10;
+	int MAX_BUCKET_SIZE = 10;
 	
 	private String index; 			//Already hashed value
 	private List<String> keys; 		//All keys in the index held in this bucket
@@ -23,11 +23,9 @@ public class Bucket {
 			throw new BucketFilledException();
 		}
 		
-		List<String> keys = this.getKeys();
 		
 		if(keys.size() < MAX_BUCKET_SIZE){
 			keys.add(key);
-			this.setKeys(keys);
 			
 			return keys;
 		}
@@ -42,8 +40,6 @@ public class Bucket {
 	}
 	
 	public List<String> removeKeys(String key){
-		List<String> keys = this.getKeys();
-		
 		for(int x = 0; x < keys.size(); x++){
 			if(keys.get(x).equals(key)){
 				keys.remove(x);
@@ -70,7 +66,9 @@ public class Bucket {
 	}
 	
 	
-	
+	public void setToOverflow(){
+		this.MAX_BUCKET_SIZE = Integer.MAX_VALUE;
+	}
 	
 	public String getIndex() {
 		return index;
