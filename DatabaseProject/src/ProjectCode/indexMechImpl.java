@@ -46,8 +46,10 @@ public class indexMechImpl {
 	 * @throws indexMechException 
 	 */
 	public void put(String key, String dataValue) throws indexMechException{
-		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
+		//final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
+		final String INPUT_FILE = direct + "index.txt";
 		
+		//checks to see if the data value already exists, and throws an error if it does.
 		boolean doopFlag = false;
 		
 		try{
@@ -234,6 +236,9 @@ public class indexMechImpl {
 	 * @return
 	 */
 	private static String hash(String dataValue) {
+		if(dataValue.length() > 4){
+			dataValue = dataValue.substring(0, 4);
+		}
 		
 		int hash = 19;
 		for (int i = 0; i < dataValue.length(); i++){
