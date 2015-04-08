@@ -18,17 +18,37 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ProjectCode.indexMechException;
 
 public class IndexMech2 {
 	private static String direct = System.getProperty("user.dir") + "\\";
+	private static String next = "";
 	
 	public static void main(String[] args) throws indexMechException{
+		/*
+		put("KeyTest", "DataValueTest");
+		put("Key2Test", "DataValueTest");
+		
 		put("testKey", "testDataValue");
-		put("2testKey", "2testDataValue");
+		put("testKey2", "testDataValue");
+		
+		put("KeyXTest", "ValueDataTest");
+		put("KeyX2Test", "ValueDataTest");
+		*/
+		
+		List<String> keys = get("ValueDataTest");
+		System.out.println(keys.toString());
+
+		keys = get("testDataValue");
+		System.out.println(keys.toString());
+
+		keys = get("DataValueTest");
+		System.out.println(keys.toString());
 	}
 	
 	public IndexMech2(){}
@@ -57,21 +77,9 @@ public class IndexMech2 {
 	public static void put(String key, String dataValue) throws indexMechException{
 		//final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
 		final String INPUT_FILE = direct + "index.txt";
+		final int MAX_BUCKET_SIZE = Integer.MAX_VALUE;
+		final String OVERFLOW_TITLE = "overflow";
 		
-		/*
-		//checks to see if the data value already exists, and throws an error if it does.
-		boolean doopFlag = false;
-		
-		
-		try{
-			List<String> gottenResult = this.get(dataValue);
-			
-			doopFlag = gottenResult.contains(key);
-		}catch(Exception e){}
-		
-		if(doopFlag){
-			throw new indexMechException("The Datavalue already indexes this key");
-		}*/
 		
 		byte[] bytes = null;
 		HashMap<String, List<String>> indexFile = null;
@@ -95,15 +103,76 @@ public class IndexMech2 {
 			fop = new FileOutputStream(entry);
 			String strToByte = "";
 			if(indexFile.size() > 0){
-				for(Map.Entry<String, List<String>> bucket : indexFile.entrySet()){
-					strToByte += bucket.getKey() + "`";
-					for(String bucketKey : bucket.getValue()){
-						strToByte += bucketKey + "~";
+				boolean keyAdded = false;
+				boolean overflowFlag = false;
+				boolean overflowExists = false;
+				boolean updateNext = false;
+
+				Iterator<Entry<String, List<String>>> entries = indexFile.entrySet().iterator();
+				while(entries.hasNext()){
+					Map.Entry<String, List<String>> bucket = entries.next();
+					
+					if(next.length() <= 0 || updateNext){
+						next = bucket.getKey();
+						updateNext = false;
 					}
-					strToByte = strToByte.substring(0, strToByte.length()-1) + "\n"; //remove ending tilde and add new line
-					System.out.println("Here: " + strToByte);
+					
+					//Add index to front of tuple;
+					if(bucket.getKey().equals(OVERFLOW_TITLE) && !keyAdded){
+						strToByte += hash(dataValue) + "`" + key + "\n";
+						keyAdded = true;
+					}
+					strToByte += bucket.getKey() + "`";
+					
+					//Check if this is the index we want
+					if(bucket.getKey().equals(hash(dataValue))){
+						if(bucket.getValue().size() < MAX_BUCKET_SIZE)
+						{
+							//Add each Key to end of tuple
+							for(String bucketKey : bucket.getValue()){
+								strToByte += bucketKey + "~";
+							}
+							strToByte += key + "~"; //tack key onto end of current bucket
+							keyAdded = true;
+						}
+						else{
+							if(next.equals(bucket.getKey())){
+								strToByte += "\n" + bucket.getKey() + "`" + key + "~";
+								keyAdded = true;
+								updateNext = true;
+							}
+							else{
+								overflowFlag = true;
+							}
+						}
+						
+					}
+					else{
+						//Add each Key to end of tuple
+						for(String bucketKey : bucket.getValue()){
+							strToByte += bucketKey + "~";
+						}
+						if(overflowFlag){
+							if(bucket.getKey() == OVERFLOW_TITLE){
+								strToByte += key;
+								keyAdded = true;
+								overflowExists = true;
+							}
+						}
+					}
+					
+					strToByte = strToByte.substring(0, strToByte.length()-1) + "\n"; //remove tilde add new line
 				}
-				strToByte = strToByte.substring(0, strToByte.length()-1); //remove ending new line
+				
+				if(overflowFlag && !overflowExists){
+					strToByte += OVERFLOW_TITLE + "`" + key;
+				}
+				else if(!keyAdded){
+					strToByte += hash(dataValue) + "`" + key + "\n";
+				}
+				else{
+					strToByte = strToByte.substring(0, strToByte.length()-1); //remove ending new line
+				}
 			}
 			else{
 				//If index file does not exist, create it with this entry.
@@ -131,8 +200,8 @@ public class IndexMech2 {
 	 * @return Key stored in the text file associated with given datavalue
 	 * @throws indexMechException 
 	 */
-	public List<String> get(String dataValue) throws indexMechException{
-		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
+	public static List<String> get(String dataValue) throws indexMechException{
+		final String INPUT_FILE = direct + "index.txt";
 		
 		byte[] bytes = null;
 		List<String> result = new ArrayList<String>();
@@ -140,11 +209,14 @@ public class IndexMech2 {
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			String[][] indexFile = byteToKeyDatavalue(bytes);
+			HashMap<String, List<String>> indexFile = byteToKeyDatavalue(bytes);
 			
-			for(String[] index : indexFile){
-				if(index[1].compareTo(dataValue) == 0){
-					result.add(index[0]);
+			Iterator<Entry<String, List<String>>> entries = indexFile.entrySet().iterator();
+			while(entries.hasNext()){
+				Map.Entry<String, List<String>> bucket = entries.next();
+				
+				if(bucket.getKey().compareTo(hash(dataValue)) == 0){
+					result = bucket.getValue();
 				}
 			}
 			
@@ -183,11 +255,14 @@ public class IndexMech2 {
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			String[][] indexFile = byteToKeyDatavalue(bytes);
+			HashMap<String, List<String>> indexFile = byteToKeyDatavalue(bytes);
 			
-			for(String[] index : indexFile){
-				if(index[1].compareTo(dataValue) != 0){
-					notDataValue.add(index);
+			Iterator<Entry<String, List<String>>> entries = indexFile.entrySet().iterator();
+			while(entries.hasNext()){
+				Map.Entry<String, List<String>> bucket = entries.next();
+				
+				if(bucket.getKey().compareTo(hash(dataValue)) == 0){
+					//notDataValue = bucket.getValue();
 				}
 			}
 			
@@ -225,15 +300,14 @@ public class IndexMech2 {
 		HashMap<String, List<String>> indexKeyPairs = new HashMap<String, List<String>>();
 		
 		for(String bucket: bucketArray){
-			System.out.println(bucket);
 			String[] indexArray = bucket.split("`"); //returns the hashed index value. should only be one
-			if(indexArray.length > 1){
+			if(indexArray.length > 2){
 				throw new indexMechException("Too many indexes");
 			}
 			String index = indexArray[0];
 			
 			//prior format index`key1~key2~...~key10
-			String[] keyArray = str.split("~"); //
+			String[] keyArray = indexArray[1].split("~"); //
 			
 			List<String> keys = Arrays.asList(keyArray);
 			
