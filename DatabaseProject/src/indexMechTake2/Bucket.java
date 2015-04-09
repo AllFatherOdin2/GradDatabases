@@ -12,7 +12,10 @@ public class Bucket {
 	public Bucket(String index, List<String> keys){
 		this.setIndex(index);
 		this.setKeys(keys);
-		this.setHasOverflowed(false);
+		if(keys.size() >= MAX_BUCKET_SIZE)
+			this.setHasOverflowed(true);
+		else
+			this.setHasOverflowed(false);
 	}
 	
 	public List<String> addKey(String key) throws BucketOverflowException, BucketFilledException{

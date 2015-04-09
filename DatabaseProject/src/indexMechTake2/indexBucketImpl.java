@@ -17,14 +17,23 @@ import java.io.InputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import ProjectCode.indexMechException;
 
 public class indexBucketImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
 	private static String next = "";
+	private static final String INPUT_FILE = direct + "index.txt";
+	private static final String OVERFLOW_TITLE = "overflow";
+	private static List<Bucket> buckets;
 	
 	public static void main(String[] args) throws indexMechException{
+		
+		buckets = getBuckets();
 
+		put("KeyTest", "testDataValue");
+		
+		//----------------10
 		put("KeyTest", "DataValueTest");
 		put("Key2Test", "DataValueTest");
 		
@@ -39,38 +48,22 @@ public class indexBucketImpl {
 		
 		put("KeyYTest", "DataValueTest");
 		put("KeyY2Test", "DataValueTest");
+		//-----------------10
 		
+		put("overflowText", "DataValueTest");
+		put("overflow2text", "DataValueTest");
+		put("overflow3text", "DataValueTest");
 
-		put("overflow", "DataValueTest");
-		put("overflow2", "DataValueTest");
-		put("overflow3", "DataValueTest");
-		
-		List<String> keys = get("DataValueTest");
-		System.out.println(keys.toString());
+
+		printBuckets();
 	}
 	
 	public indexBucketImpl(){}
 	
-	/**
-	 * Will read in data from a byte array, and build a text file containing the data, with the key as the name of the file
-	 * If the file already exists, the data will be erased and overwritten
-	 * 
-	 * @param key rid used for counting records
-	 * @param dataValue Data is used in a hash function, which returns value of "bucket" to put key-datavalue pair in.
-	 * @throws indexMechException 
-	 */
-	public static void put(String key, String dataValue) throws indexMechException{
-		//final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
-		final String INPUT_FILE = direct + "index.txt";
-		final String OVERFLOW_TITLE = "overflow";
-		final String hashedValue = hash(dataValue);
-		boolean updateNext = false;
-		boolean keyAdded = false;
-		Bucket newBucket = null;
+	public static List<Bucket> getBuckets(){
 		
 		byte[] bytes = null;
 		List<Bucket> buckets = null;
-		Bucket overflowBucket = null;
 		
 		
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
@@ -83,102 +76,143 @@ public class indexBucketImpl {
 			else{
 				buckets = ByteStringManipulator.byteToBucket(bytes);
 				
-				//get last element, to check if it is overflow
-				Bucket possibleOverflow = buckets.get(buckets.size()-1); 
-				if(possibleOverflow.getIndex().equals(OVERFLOW_TITLE)){
-					overflowBucket = possibleOverflow;
-					overflowBucket.setToOverflow(); //just in case
-					buckets.remove(buckets.size()-1); //Remove overflow bucket from major list to add to end later
-				}
 			}
 		} catch (IOException e) {
 			//File does not exist, therefore create
 			buckets = new ArrayList<Bucket>();
 		}
 		
+		return buckets;
+	}
+	
+	/**
+	 * Will read in data from a byte array, and build a text file containing the data, with the key as the name of the file
+	 * If the file already exists, the data will be erased and overwritten
+	 * 
+	 * @param key rid used for counting records
+	 * @param dataValue Data is used in a hash function, which returns value of "bucket" to put key-datavalue pair in.
+	 * @throws indexMechException 
+	 */
+	public static void put(String key, String dataValue) throws indexMechException{
+		//final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
+		final String hashedValue = hash(dataValue);
+		boolean updateNext = false;
+		boolean keyAdded = false;
+		boolean toOverflow = false;
+		Bucket newBucket = null;
+		Bucket overflowBucket = null;
+		
+
+		//get last element, to check if it is overflow
+		if(buckets.size() > 0){
+			Bucket possibleOverflow = buckets.get(buckets.size()-1); 
+			if(possibleOverflow.getIndex().equals(OVERFLOW_TITLE)){
+				overflowBucket = possibleOverflow;
+				overflowBucket.setToOverflow(); //just in case
+				buckets.remove(buckets.size()-1); //Remove overflow bucket from major list to add to end later
+			}
+			
+			//if index file exists, find where to put this new item
+			for(Bucket bucket : buckets){
+				//update next if needed
+				if(updateNext && bucket.getIndex().equals(next) == false){
+					next = hashedValue;
+					System.out.print(next);
+					updateNext = false;
+				}
+				
+				if(keyAdded){
+					break;
+				}
+				
+				if(bucket.isCorrectBucket(hashedValue)){
+					try {
+						bucket.addKey(key);
+						keyAdded = true;
+					} catch (BucketOverflowException e) {
+						//This bucket is the next one to be split, so allow it to.
+						if(next.equals(bucket.getIndex()) && !updateNext){
+							updateNext = true;
+							//Create new List of keys
+							List<String> tempList = new ArrayList<String>();
+							tempList.add(key);
+							//Create new Bucket with the same hash Value, but this new key
+							newBucket = new Bucket(hashedValue, tempList);
+						}
+						//This bucket is not next, therefore add this to overflow.
+						else{
+							if(overflowBucket == null){
+								//the overflow bucket does not exist
+								
+								//Create new List of keys
+								List<String> tempList = new ArrayList<String>();
+								tempList.add(key);
+								overflowBucket = new Bucket(OVERFLOW_TITLE, tempList);
+								keyAdded = true;
+							}
+							else{
+								//the bucket already exists
+								try {
+									overflowBucket.addKey(key);
+									keyAdded = true;
+								} catch (BucketOverflowException | BucketFilledException e1) {
+									e1.printStackTrace();
+								}
+							}
+						}
+					} catch(BucketFilledException e){
+						//This bucket is filled, but another bucket of the same hash should exist elsewhere
+						//so ignore this bucket entirely
+						toOverflow = true;
+						continue;
+					}
+				}
+			}
+		}
+		else{
+			next = hashedValue;
+		}
+		
+		//if the data hasnt been added to a bucket yet, add it. 
+		//And the key hasnt been added to a bucket
+		if(newBucket == null && !keyAdded && !toOverflow){
+			List<String> tempList = new ArrayList<String>();
+			tempList.add(key);
+			
+			newBucket = new Bucket(hashedValue, tempList);
+		}
+		
+		if(newBucket != null){
+			//add the new bucket to the list
+			buckets.add(newBucket);
+		}
+		
+		if(toOverflow){
+			//this bucket needs to be added to overflow, 
+			//because it is not the next target, and overflow exists already
+			try {
+				overflowBucket.addKey(key);
+			} catch (BucketOverflowException | BucketFilledException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//If overflow bucket exists, tack it on to bucket array again.
+		if(overflowBucket != null){
+			buckets.add(overflowBucket);
+		}
+			
+	}
+
+	public static void printBuckets(){
 		File entry;
 		FileOutputStream fop = null;
 
 		entry = new File(direct + "index.txt");
 		try {
 			fop = new FileOutputStream(entry);
-			if(buckets.size() > 0){
-				//if index file exists, find where to put this new item
-				for(Bucket bucket : buckets){
-					//update next if needed
-					if((next.length() <= 0 || updateNext) && !bucket.getIndex().equals(next)){
-						next = hashedValue;
-						updateNext = false;
-					}
-					
-					if(keyAdded){
-						break;
-					}
-					
-					if(bucket.isCorrectBucket(hashedValue)){
-						try {
-							bucket.addKey(key);
-							keyAdded = true;
-						} catch (BucketOverflowException e) {
-							//This bucket is the next one to be split, so allow it to.
-							if(next.equals(bucket.getIndex())){
-								updateNext = true;
-								//Create new List of keys
-								List<String> tempList = new ArrayList<String>();
-								tempList.add(key);
-								//Create new Bucket with the same hash Value, but this new key
-								newBucket = new Bucket(hashedValue, tempList);
-							}
-							//This bucket is not next, therefore add this to overflow.
-							else{
-								if(overflowBucket == null){
-									//the overflow bucket does not exist
-									
-									//Create new List of keys
-									List<String> tempList = new ArrayList<String>();
-									tempList.add(key);
-									overflowBucket = new Bucket(OVERFLOW_TITLE, tempList);
-									overflowBucket.setToOverflow();
-									keyAdded = true;
-								}
-								else{
-									//the bucket already exists
-									try {
-										overflowBucket.addKey(key);
-										keyAdded = true;
-									} catch (BucketOverflowException | BucketFilledException e1) {
-										e1.printStackTrace();
-									}
-								}
-							}
-						} catch(BucketFilledException e){
-							//This bucket is filled, but another bucket of the same hash should exist elsewhere
-							//so ignore this bucket entirely
-							continue;
-						}
-					}
-				}
-			}
-			
-			//if the data hasnt been added to a bucket yet, add it. 
-			//And the key hasnt been added to a bucket
-			if(newBucket == null && !keyAdded){
-				List<String> tempList = new ArrayList<String>();
-				tempList.add(key);
-				
-				newBucket = new Bucket(hashedValue, tempList);
-			}
-			
-			if(newBucket != null){
-				//add the new bucket to the list
-				buckets.add(newBucket);
-			}
 
-			//If overflow bucket exists, tack it on to bucket array again.
-			if(overflowBucket != null){
-				buckets.add(overflowBucket);
-			}
-			
 			//Write buckets to index File
 			String strToByte = "";
 			for(Bucket bucket:buckets){
@@ -198,7 +232,7 @@ public class indexBucketImpl {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Will look for a file with the same name as the key, 
 	 * and read the data from it, returning it as a byte[]
