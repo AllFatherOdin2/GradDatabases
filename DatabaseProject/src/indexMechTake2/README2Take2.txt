@@ -8,7 +8,7 @@ Assumptions
 	-We do not enforce this at the moment. Multiple copies of a key are permitted and can exist in multiple buckets or
 		the same bucket. If remove() is called on a key, all copies of a key will be deleted, regardless of location.
 -There are 2 types of files: index and data
--data files are named "data"+key+".txt"
+-data files are named indexValue+".txt"
 -index file is unique and is named "index.txt"
 -Buckets are stored as tuples in modified CSV format in the index file
 	-The first value is the "bucket" tuple is the index value
@@ -19,5 +19,17 @@ Assumptions
 		-Additional error checking and database sanitization would solve this issue, but that is outside the scope of this 
 			project.
 	-The index value of the overflow bucket is OVERFLOW_TITLE (set to "overflow" by default)
+	
+Class Structure
+	-Bucket:
+		The Bucket class is a basic class that we use to represent a tuple in the index file. It can add and remove keys from
+		the list of keys that is stored as a class variable, and each has a unique index value (based on hashed data values),
+		which act as identifiers. However, we do not enforce the index value be unique, as there may need to be multiple
+		buckets with the same index after one overflows.
+	-ByteStringManipulator
+		The ByteStringManipulator contains all of our code for reading in a text file as a byte stream and converting it to
+		a String array, which we then parse into a Bucket.
+	-IndexBucketImpl
+		
 
 	
