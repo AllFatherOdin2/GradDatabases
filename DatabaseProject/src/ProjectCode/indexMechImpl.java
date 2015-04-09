@@ -79,24 +79,24 @@ public class indexMechImpl {
 		File entry;
 		FileOutputStream fop = null;
 
-			entry = new File(direct + "index" + hash(dataValue) + ".txt");
-			try {
-				fop = new FileOutputStream(entry);
-				String strToByte = "";
-				for(String[] index : indexFile){
-					strToByte += index[0] + "`" + index[1] + "~";
-				}
-				strToByte += key + "`" + dataValue + "~";
-				
-				byte[] data = strToByte.getBytes();
-				
-				fop.write(data);
-				fop.flush();
-				fop.close();
-				
-			} catch (IOException e) {
-				e.printStackTrace();
+		entry = new File(direct + "index" + hash(dataValue) + ".txt");
+		try {
+			fop = new FileOutputStream(entry);
+			String strToByte = "";
+			for(String[] index : indexFile){
+				strToByte += index[0] + "`" + index[1] + "~";
 			}
+			strToByte += key + "`" + dataValue + "~";
+			
+			byte[] data = strToByte.getBytes();
+			
+			fop.write(data);
+			fop.flush();
+			fop.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

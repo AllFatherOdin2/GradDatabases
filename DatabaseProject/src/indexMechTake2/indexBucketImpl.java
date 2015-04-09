@@ -37,17 +37,17 @@ public class indexBucketImpl {
 		put("KeyTest", "DataValueTest");
 		put("Key2Test", "DataValueTest");
 		
-		put("testKey", "DataValueTest");
-		put("testKey2", "DataValueTest");
+		put("testKey", "DataValueTest1");
+		put("testKey2", "DataValueTest1");
 		
-		put("KeyWTest", "DataValueTest");
-		put("KeyW2Test", "DataValueTest");
+		put("KeyWTest", "DataValueTest2");
+		put("KeyW2Test", "DataValueTest2");
 		
-		put("KeyXTest", "DataValueTest");
-		put("KeyX2Test", "DataValueTest");
+		put("KeyXTest", "DataValueTest3");
+		put("KeyX2Test", "DataValueTest3");
 		
-		put("KeyYTest", "DataValueTest");
-		put("KeyY2Test", "DataValueTest");
+		put("KeyYTest", "DataValueTest4");
+		put("KeyY2Test", "DataValueTest4");
 		//-----------------10
 		
 		put("overflowText", "DataValueTest");
@@ -102,6 +102,9 @@ public class indexBucketImpl {
 		Bucket newBucket = null;
 		Bucket overflowBucket = null;
 		
+		//The datafile to update. Will be based on Hash, unless need to overflow
+		String targetFile = hashedValue;
+		
 
 		//get last element, to check if it is overflow
 		if(buckets.size() > 0){
@@ -140,6 +143,7 @@ public class indexBucketImpl {
 						}
 						//This bucket is not next, therefore add this to overflow.
 						else{
+							targetFile = OVERFLOW_TITLE;
 							if(overflowBucket == null){
 								//the overflow bucket does not exist
 								
@@ -191,19 +195,82 @@ public class indexBucketImpl {
 			//because it is not the next target, and overflow exists already
 			try {
 				overflowBucket.addKey(key);
+				targetFile = OVERFLOW_TITLE;
 			} catch (BucketOverflowException | BucketFilledException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		
 		//If overflow bucket exists, tack it on to bucket array again.
 		if(overflowBucket != null){
 			buckets.add(overflowBucket);
 		}
+		
+		addToTargetFile(targetFile, key, dataValue);
 			
 	}
 
+	private static void addToTargetFile(String targetFile, String key, String dataValue) {
+		String INPUT_FILE = direct + targetFile + ".txt";
+
+		byte[] bytes = null;
+		String[][] indexFile = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			indexFile = byteToKeyDatavalue(bytes);
+
+		} catch (IOException e) {
+			//File does not exist, therefore create in next step
+			indexFile = new String[0][0];
+		}
+		
+		File entry;
+		FileOutputStream fop = null;
+
+		entry = new File(INPUT_FILE);
+		try {
+			fop = new FileOutputStream(entry);
+			String strToByte = "";
+			for(String[] index : indexFile){
+				strToByte += index[0] + "`" + index[1] + "\n";
+			}
+			strToByte += dataValue + "`" + key;
+			
+			byte[] data = strToByte.getBytes();
+			
+			fop.write(data);
+			fop.flush();
+			fop.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	/**
+	 * This function is used to convert a byte array into a 2D String array
+	 * This is necessary because the indexed records are stored as a single string of text, and need to be split
+	 * apart before they can be used
+	 * 
+	 * @param data The byte array to split into strings
+	 * @return
+	 */
+	private static String[][] byteToKeyDatavalue(byte[] data){
+		String str = ByteStringManipulator.byteToStringArray(data);
+		String[] indexPairs = str.split("\n"); //prior format key`dataValue~ (repeat)
+		
+		String[][] indexValuePairs = new String[indexPairs.length][2];
+		for(int x = 0; x < indexPairs.length; x++){ //format key`dataValue
+			indexValuePairs[x] = indexPairs[x].split("`");
+		}
+		return indexValuePairs;
+	}
+	
 	public static void printBuckets(){
 		File entry;
 		FileOutputStream fop = null;
