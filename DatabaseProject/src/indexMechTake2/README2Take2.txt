@@ -20,6 +20,9 @@ Assumptions
 			-Additional error checking and database sanitization would solve this issue, but that is outside the scope of 
 			 this project.
 		-The index value of the overflow bucket is OVERFLOW_TITLE (set to "overflow" by default)
+	-Before modifying any files, the user must call getBuckets(), and after all modifications are complete, the user must call
+	 printBuckets() in order to "commit" the changes. These functions are integral to the proper function of the API
+	 functions, and forgetting them has catastrophic effects.
 
 Class Structure
 	-Bucket:
