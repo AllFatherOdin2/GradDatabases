@@ -225,6 +225,12 @@ public class indexBucketImpl {
 			
 	}
 
+	/**
+	 * Adds a key-datavalue pair to a file
+	 * @param targetFile File to add information to
+	 * @param key Data key to add
+	 * @param dataValue Data to add
+	 */
 	private static void addToTargetFile(String targetFile, String key, String dataValue) {
 		String INPUT_FILE = direct + targetFile + ".txt";
 
@@ -284,6 +290,9 @@ public class indexBucketImpl {
 		return indexValuePairs;
 	}
 	
+	/**
+	 * Prints all buckets in the index file
+	 */
 	public static void printBuckets(){
 		File entry;
 		FileOutputStream fop = null;
@@ -314,7 +323,7 @@ public class indexBucketImpl {
 	
 	/**
 	 * Will look for a file with the same name as the key, 
-	 * and read the data from it, returning it as a byte[]
+	 * and read the data from it, returning it as a list of strings
 	 * 
 	 * @param dataValue Datavalue to search for in a file based on hashed value
 	 * @return Key stored in the text file associated with given datavalue
@@ -351,7 +360,7 @@ public class indexBucketImpl {
 	}
 	
 	/**
-	 * Deletes text file with the same name as the given key
+	 * TODO: add description
 	 * 
 	 * @param dataValue Datavalue that is going to be deleted from a given bucket
 	 * @throws indexMechException 
