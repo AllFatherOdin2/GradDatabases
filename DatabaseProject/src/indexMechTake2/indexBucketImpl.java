@@ -64,6 +64,10 @@ public class indexBucketImpl {
 	
 	public indexBucketImpl(){}
 	
+	/**
+	 * Reads in the index file as a byte array and prints out all of the buckets that were found.
+	 * @return
+	 */
 	public static List<Bucket> getBuckets(){
 		
 		byte[] bytes = null;
