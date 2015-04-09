@@ -24,14 +24,13 @@ public class indexBucketImpl {
 	private static String direct = System.getProperty("user.dir") + "\\";
 	private static String next = "";
 	private static final String INPUT_FILE = direct + "index.txt";
-	private static final String OVERFLOW_TITLE = "overflow";
+	private static final String OVERFLOW_TITLE = "OVERFLOW";
 	private static List<Bucket> buckets;
 	
 	public static void main(String[] args) throws indexMechException{
 		
 		buckets = getBuckets();
 
-		put("KeyTest", "testDataValue");
 		
 		//----------------10
 		put("KeyTest", "DataValueTest");
@@ -49,13 +48,18 @@ public class indexBucketImpl {
 		put("KeyYTest", "DataValueTest4");
 		put("KeyY2Test", "DataValueTest4");
 		//-----------------10
+
+		put("KeyTest", "testDataValue");
 		
 		put("overflowText", "DataValueTest");
 		put("overflow2text", "DataValueTest");
 		put("overflow3text", "DataValueTest");
-
+		
 
 		printBuckets();
+
+		System.out.println(next);
+		System.out.println(Integer.MAX_VALUE);
 	}
 	
 	public indexBucketImpl(){}
@@ -95,7 +99,7 @@ public class indexBucketImpl {
 	 */
 	public static void put(String key, String dataValue) throws indexMechException{
 		//final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
-		final String hashedValue = hash(dataValue);
+		String hashedValue = hash(dataValue);
 		boolean updateNext = false;
 		boolean keyAdded = false;
 		boolean toOverflow = false;
@@ -119,7 +123,6 @@ public class indexBucketImpl {
 				//update next if needed
 				if(updateNext && bucket.getIndex().equals(next) == false){
 					next = hashedValue;
-					System.out.print(next);
 					updateNext = false;
 				}
 				
@@ -138,8 +141,9 @@ public class indexBucketImpl {
 							//Create new List of keys
 							List<String> tempList = new ArrayList<String>();
 							tempList.add(key);
-							//Create new Bucket with the same hash Value, but this new key
-							newBucket = new Bucket(hashedValue, tempList);
+							//Create new Bucket with the same hash Value + split indicator, but this new key
+							newBucket = new Bucket(hashedValue + "s", tempList);
+							targetFile += "s"; //There is a split file, find it.
 						}
 						//This bucket is not next, therefore add this to overflow.
 						else{
@@ -154,7 +158,7 @@ public class indexBucketImpl {
 								keyAdded = true;
 							}
 							else{
-								//the bucket already exists
+								//the overflow bucket already exists
 								try {
 									overflowBucket.addKey(key);
 									keyAdded = true;
@@ -167,6 +171,8 @@ public class indexBucketImpl {
 						//This bucket is filled, but another bucket of the same hash should exist elsewhere
 						//so ignore this bucket entirely
 						toOverflow = true;
+						targetFile += "s"; //There is a split file, find it.
+						hashedValue += "s";
 						continue;
 					}
 				}
@@ -190,21 +196,21 @@ public class indexBucketImpl {
 			buckets.add(newBucket);
 		}
 		
-		if(toOverflow){
-			//this bucket needs to be added to overflow, 
-			//because it is not the next target, and overflow exists already
-			try {
-				overflowBucket.addKey(key);
-				targetFile = OVERFLOW_TITLE;
-			} catch (BucketOverflowException | BucketFilledException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		
 		//If overflow bucket exists, tack it on to bucket array again.
 		if(overflowBucket != null){
+			
+			if(toOverflow){
+				//this bucket needs to be added to overflow, 
+				//because it is not the next target, and overflow exists already
+				try {
+					overflowBucket.addKey(key);
+					targetFile = OVERFLOW_TITLE;
+				} catch (BucketOverflowException | BucketFilledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			buckets.add(overflowBucket);
 		}
 		
