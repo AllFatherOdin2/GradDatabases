@@ -65,8 +65,8 @@ public class indexBucketImpl {
 	public indexBucketImpl(){}
 	
 	/**
-	 * Reads in the index file as a byte array and prints out all of the buckets that were found.
-	 * @return
+	 * Reads in the index file as a byte array and returns all of the buckets that were found.
+	 * @return List of buckets stored in index
 	 */
 	public static List<Bucket> getBuckets(){
 		
@@ -95,7 +95,10 @@ public class indexBucketImpl {
 	
 	/**
 	 * Will read in data from a byte array, and build a text file containing the data, with the key as the name of the file
-	 * If the file already exists, the data will be erased and overwritten
+	 * If the file exists and is not full, the key-datavalue pair will be added to the file, and the key added to the index
+	 * If the file exists and is "full", a file will be split in round-robin fashion. If the overflowing file is not the
+	 * one to split, then an overflow file will be generated and the data stored there until the file is split by more
+	 * overflows. At that point, the data will be put into the new split file, and removed from the overflow file.
 	 * 
 	 * @param key rid used for counting records
 	 * @param dataValue Data is used in a hash function, which returns value of "bucket" to put key-datavalue pair in.
