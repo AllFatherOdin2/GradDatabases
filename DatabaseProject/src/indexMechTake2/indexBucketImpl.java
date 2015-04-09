@@ -27,11 +27,12 @@ public class indexBucketImpl {
 	private static final String OVERFLOW_TITLE = "OVERFLOW";
 	private static List<Bucket> buckets;
 	
-	public static void main(String[] args) throws indexMechException{
+	public static void main(String[] args) throws Exception{
 		
 		buckets = getBuckets();
-		/*
 		
+		
+		put("KeyTest", "testDataValue");
 		//----------------10
 		put("KeyTest", "DataValueTest");
 		put("Key2Test", "DataValueTest");
@@ -49,13 +50,14 @@ public class indexBucketImpl {
 		put("KeyY2Test", "DataValueTest4");
 		//-----------------10
 
-		put("KeyTest", "testDataValue");
 		
 		put("overflowText", "DataValueTest");
 		put("overflow2text", "DataValueTest");
 		put("overflow3text", "DataValueTest");
-		*/
-
+		/**/
+		
+		//remove("overflow2text");
+		
 		printBuckets();
 		
 		System.out.print(get("DataValueTest").toString());
@@ -412,9 +414,9 @@ public class indexBucketImpl {
 	 * TODO: add description
 	 * 
 	 * @param key key that is going to be deleted from a given bucket
-	 * @throws indexMechException 
+	 * @throws Exception 
 	 */
-	public void remove(String key) throws indexMechException{
+	public static void remove(String key) throws Exception{
 		int targetBucket = -1;
 		boolean breakLoop = false;
 
@@ -432,6 +434,10 @@ public class indexBucketImpl {
 			if(breakLoop){
 				break;
 			}
+		}
+		
+		if(targetBucket<0){
+			throw new Exception("key doesnt exist");
 		}
 		
 		final String INPUT_FILE = direct + buckets.get(targetBucket).getIndex() + ".txt";

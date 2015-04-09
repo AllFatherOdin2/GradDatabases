@@ -38,21 +38,18 @@ public class Bucket {
 	 */
 	public List<String> addKey(String key) throws BucketOverflowException, BucketFilledException{
 		
-		if(this.hasOverflowed){
-			//If this triggers, then another bucket with the same index already exists,
-			//therefore calling function should just ignore this one and find the other.
-			throw new BucketFilledException();
-		}
-		
-		
 		if(keys.size() < MAX_BUCKET_SIZE){
 			keys.add(key);
 			
 			return keys;
 		}
-
 		//Catch on other end to create overflow bucket
 		this.setHasOverflowed(true);
+		if(this.hasOverflowed){
+			//If this triggers, then another bucket with the same index already exists,
+			//therefore calling function should just ignore this one and find the other.
+			throw new BucketFilledException();
+		}
 		throw new BucketOverflowException();
 	}
 	
