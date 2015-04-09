@@ -108,7 +108,6 @@ public class indexBucketImpl {
 			Bucket possibleOverflow = buckets.get(buckets.size()-1); 
 			if(possibleOverflow.getIndex().equals(OVERFLOW_TITLE)){
 				overflowBucket = possibleOverflow;
-				overflowBucket.setToOverflow(); //just in case
 				buckets.remove(buckets.size()-1); //Remove overflow bucket from major list to add to end later
 			}
 			

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Bucket {
 	int MAX_BUCKET_SIZE = 10;
+	private static final String OVERFLOW_TITLE = "overflow";
 	
 	private String index; 			//Already hashed value
 	private List<String> keys; 		//All keys in the index held in this bucket
@@ -11,6 +12,9 @@ public class Bucket {
 	
 	public Bucket(String index, List<String> keys){
 		this.setIndex(index);
+		if(index.equals(OVERFLOW_TITLE)){
+			this.setToOverflow();
+		}
 		this.setKeys(keys);
 		if(keys.size() >= MAX_BUCKET_SIZE)
 			this.setHasOverflowed(true);
@@ -69,7 +73,7 @@ public class Bucket {
 	}
 	
 	
-	public void setToOverflow(){
+	private void setToOverflow(){
 		this.MAX_BUCKET_SIZE = Integer.MAX_VALUE;
 	}
 	
