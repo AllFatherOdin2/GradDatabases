@@ -215,7 +215,6 @@ public class indexBucketImpl {
 					overflowBucket.addKey(key);
 					targetFile = OVERFLOW_TITLE;
 				} catch (BucketOverflowException | BucketFilledException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -324,8 +323,11 @@ public class indexBucketImpl {
 	}
 	
 	/**
-	 * Will look for a file with the same name as the key, 
-	 * and read the data from it, returning it as a list of strings
+	 * This function will look for a datafile with same name as the hashed datavalue, and return all keys with a matching
+	 * datavalue. Because only 4 characters are used for the hashing, the full datavalue is used for the comparison, to 
+	 * ensure that the returned keys are correct. However, if the bucket is split, then there might be more keys in the
+	 * split file, or in the overflow file. This function calls getHashed, which searches for the split files recursively,
+	 * and then specifically searches the overflow file, in order to find all instances of the given datavalue.
 	 * 
 	 * @param dataValue Datavalue to search for in a file based on hashed value
 	 * @return Key stored in the text file associated with given datavalue
@@ -411,9 +413,11 @@ public class indexBucketImpl {
 	}
 	
 	/**
-	 * TODO: add description
+	 * This function searches through the list of buckets provided by getBuckets(), and checks if the key exists in each
+	 * bucket. If it does, that bucket's index becomes the target file. The function then deletes the key from the bucket
+	 * in the index file, and opens the target file, rewriting the entire file, minus the key-datavalue pair being removed.
 	 * 
-	 * @param key key that is going to be deleted from a given bucket
+	 * @param key Key that is going to be deleted from a given bucket
 	 * @throws Exception 
 	 */
 	public static void remove(String key) throws Exception{
