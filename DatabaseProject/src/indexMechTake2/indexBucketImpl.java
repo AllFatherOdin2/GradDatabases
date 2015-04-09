@@ -30,7 +30,7 @@ public class indexBucketImpl {
 	public static void main(String[] args) throws indexMechException{
 		
 		buckets = getBuckets();
-
+		/*
 		
 		//----------------10
 		put("KeyTest", "DataValueTest");
@@ -54,12 +54,12 @@ public class indexBucketImpl {
 		put("overflowText", "DataValueTest");
 		put("overflow2text", "DataValueTest");
 		put("overflow3text", "DataValueTest");
-		
+		*/
 
 		printBuckets();
+		
+		System.out.print(get("DataValueTest").toString());
 
-		System.out.println(next);
-		System.out.println(Integer.MAX_VALUE);
 	}
 	
 	public indexBucketImpl(){}
@@ -240,7 +240,7 @@ public class indexBucketImpl {
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			indexFile = byteToKeyDatavalue(bytes);
+			indexFile = byteToKeyDataValue(bytes);
 
 		} catch (IOException e) {
 			//File does not exist, therefore create in next step
@@ -279,7 +279,7 @@ public class indexBucketImpl {
 	 * @param data The byte array to split into strings
 	 * @return
 	 */
-	private static String[][] byteToKeyDatavalue(byte[] data){
+	private static String[][] byteToKeyDataValue(byte[] data){
 		String str = ByteStringManipulator.byteToStringArray(data);
 		String[] indexPairs = str.split("\n"); //prior format key`dataValue~ (repeat)
 		
@@ -330,7 +330,10 @@ public class indexBucketImpl {
 	 * @throws indexMechException 
 	 */
 	public static List<String> get(String dataValue) throws indexMechException{
-		final String INPUT_FILE = direct + "index.txt";
+		String hashValue = hash(dataValue);
+		
+		final String INPUT_FILE = direct + hashValue + ".txt";
+		String[][] tuples = null;
 		
 		byte[] bytes = null;
 		List<String> result = new ArrayList<String>();
@@ -338,16 +341,27 @@ public class indexBucketImpl {
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			List<Bucket> buckets = ByteStringManipulator.byteToBucket(bytes);
+			tuples = byteToKeyDataValue(bytes);
 			
-			for(Bucket bucket : buckets){
-				
-				if(bucket.getIndex().compareTo(hash(dataValue)) == 0){
-					result = bucket.getKeys();
+			for(String[] tuple : tuples){
+				if(tuple[0].equals(dataValue)){
+					result.add(tuple[1]);
 				}
+				
 			}
 			
 			if(result.size() > 0){
+				try{
+					//Search all split files
+					List<String> tempResult = getHash(hashValue+"s", dataValue);
+					result.addAll(tempResult);
+				}catch(indexMechException e){
+					try{
+						//Search the overflow file
+						List<String> tempResult = getHash(OVERFLOW_TITLE, dataValue);
+						result.addAll(tempResult);
+					}catch(indexMechException e1){}
+				}
 				return result;
 			}
 			
@@ -356,52 +370,106 @@ public class indexBucketImpl {
 		} catch(IOException e){
 			throw new indexMechException("No index file could be found");
 		}
-		
 	}
 	
-	/**
-	 * TODO: add description
-	 * 
-	 * @param dataValue Datavalue that is going to be deleted from a given bucket
-	 * @throws indexMechException 
-	 */
-	public void remove(String dataValue) throws indexMechException{
-
-		final String INPUT_FILE = direct + "index" + hash(dataValue) + ".txt";
-
+	private static List<String> getHash(String hashValue, String dataValue) throws indexMechException{
+		final String INPUT_FILE = direct + hashValue + ".txt";
+		String[][] tuples = null;
+		
 		byte[] bytes = null;
 		List<String> result = new ArrayList<String>();
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
 			bytes = new byte[inputStream.available()];
 			inputStream.read(bytes);
 			
-			List<Bucket> buckets = ByteStringManipulator.byteToBucket(bytes);
+			tuples = byteToKeyDataValue(bytes);
 			
-			for(Bucket bucket : buckets){
-				
-				if(bucket.getIndex().compareTo(hash(dataValue)) == 0){
-					//notDataValue = bucket.getValue();
+			for(String[] tuple : tuples){
+				if(tuple[0].equals(dataValue)){
+					result.add(tuple[1]);
 				}
+				
 			}
 			
-			//throw new indexMechException("That Data Value does not exist");
+			if(result.size() > 0){
+				try{
+					//Search all split files
+					List<String> tempResult = getHash(hashValue+"s", dataValue);
+					result.addAll(tempResult);
+				}catch(indexMechException e){}
+				
+				return result;
+			}
 			
+			throw new indexMechException("That Data Value does not exist");
 			
 		} catch(IOException e){
 			throw new indexMechException("No index file could be found");
 		}
+	}
+	
+	/**
+	 * TODO: add description
+	 * 
+	 * @param key key that is going to be deleted from a given bucket
+	 * @throws indexMechException 
+	 */
+	public void remove(String key) throws indexMechException{
+		int targetBucket = -1;
+		boolean breakLoop = false;
 
-		
-		File entry = new File(INPUT_FILE);
-		
-		if(entry.exists()){
-			entry.delete();
-			/*
-			for(String[] record : notDataValue){
-				put(record[0],record[1]);
+		for(int x = 0; x < buckets.size(); x++){
+			List<String> keys = buckets.get(x).getKeys();
+			for(String bucketKey : keys){
+				//if the bucket has the key we want, break out.
+				if(bucketKey.equals(key)){
+					targetBucket = x;
+					buckets.get(x).removeKeys(key);
+					breakLoop = true;
+					break;
+				}
 			}
-			*/
+			if(breakLoop){
+				break;
+			}
 		}
+		
+		final String INPUT_FILE = direct + buckets.get(targetBucket).getIndex() + ".txt";
+		String[][] tuples = null;
+		byte[] bytes = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			tuples = byteToKeyDataValue(bytes);
+
+		} catch (IOException e) {
+			//File does not exist, cant delete nothing
+			e.printStackTrace();
+		}
+		
+		FileOutputStream fop = null;
+		File entry = new File(INPUT_FILE);
+		try {
+			fop = new FileOutputStream(entry);
+			String strToByte = "";
+			for(String[] index : tuples){
+				if(!index[1].equals(key)){
+					strToByte += index[0] + "`" + index[1] + "\n";
+				}
+			}
+			strToByte = strToByte.substring(0, strToByte.length()-1); //remove last newline
+			
+			byte[] data = strToByte.getBytes();
+			
+			fop.write(data);
+			fop.flush();
+			fop.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/**
