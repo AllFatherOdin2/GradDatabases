@@ -73,6 +73,8 @@ public class LoggingImpl {
 		return result;
 	}
 	
+	
+	//TODO: read one in, write to log file. "read in 'tuple id from file' population is 'old Pop' at 'Time'","writing to 'file' 'tuple id', population to 'new'", "Commit 'file'"
 	private List<String> getNext() throws LoggingException{
 		for(List<String> city : cities){
 			String countryCode = city.get(2);
