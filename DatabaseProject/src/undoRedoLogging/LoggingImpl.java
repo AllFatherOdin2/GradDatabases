@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ProjectCode.QueryExecException;
 import ProjectCode.QueryExecImpl;
 
 
@@ -72,7 +73,26 @@ public class LoggingImpl {
 		return result;
 	}
 	
-	
+	private List<String> getNext() throws LoggingException{
+		for(List<String> city : cities){
+			String countryCode = city.get(2);
+			for (List<String> country : countries){
+				String code = country.get(0);
+				if (countryCode.compareTo(code) == 0){
+					
+					int countryPop = Integer.parseInt(country.get(6));
+					int cityPop = Integer.parseInt(city.get(4));
+					if(cityPop > .4 * countryPop){
+						results.add(city.get(1));
+					}
+				}
+			}
+		}
+		if(results.size() == 0){
+			throw new LoggingException("No matches were found.");
+		}
+		return close();
+	}
 	
 	private List<String> close(){
 		/*
