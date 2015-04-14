@@ -111,7 +111,20 @@ public class LoggingImpl {
 		return resultList;
 	}
 	
-	
+	private List<String> close(){
+		/*
+		System.out.println(results.size());
+		for(String city : results){
+			System.out.println(city);
+		}
+		*/
+		List<String> tempResults = results;
+		cities = null;
+		countries = null;
+		results = null;
+		return tempResults;
+		
+	}
 	
 	
 	public double getQueryTime() {
