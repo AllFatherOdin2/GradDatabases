@@ -1,5 +1,10 @@
 package undoRedoLogging;
 
+/**
+ * @author DModica
+ * @author JBosworth
+ *
+ */
 public class Attribute {
 	private String name;
 	
