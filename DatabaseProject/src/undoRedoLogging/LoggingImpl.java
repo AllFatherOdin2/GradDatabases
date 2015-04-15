@@ -31,43 +31,42 @@ public class LoggingImpl {
 	private static double queryTime = 0;
 	
 	/**
-	 * 
+	 * Creates city and country Relation objects and populates them
 	 * @return
 	 * @throws LoggingException
 	 */
 	public List<String> open() throws LoggingException{
 		final String INPUT_FILE_CITY = direct + "city.csv";
 		final String INPUT_FILE_COUNTRY = direct + "country.csv";
-		final String LOG_FILE = direct + "log.txt";
+		ArrayList<String> cityAttrs = new ArrayList<String>();
+		cityAttrs.add("ID");
+		cityAttrs.add("Name");
+		cityAttrs.add("CountryCode");
+		cityAttrs.add("District");
+		cityAttrs.add("Population");
+		ArrayList<String> countryAttrs = new ArrayList<String>();
+		countryAttrs.add("Code");
+		countryAttrs.add("Name");
+		countryAttrs.add("Continent");
+		countryAttrs.add("Region");
+		countryAttrs.add("SurfaceArea");
+		countryAttrs.add("IndepYear");
+		countryAttrs.add("Population");
+		countryAttrs.add("LifeExpectancy");
+		countryAttrs.add("GNP");
+		countryAttrs.add("GNPOld");
+		countryAttrs.add("GovernmentForm");
+		countryAttrs.add("HeadOfState");
+		countryAttrs.add("Captial");
+		countryAttrs.add("Code2");
+		countryAttrs.add("LocalName");
 		
-		byte[] cityBytes = null;
-		try (InputStream inputStream = new FileInputStream(INPUT_FILE_CITY)){
-			cityBytes = new byte[inputStream.available()];
-			inputStream.read(cityBytes);
-			cities = ByteStringManipulator.convertByteArrayto2DList(cityBytes);
-
-			if(cities.size() == 0){
-				throw new LoggingException("That Data table is empty");
-			}
-			
-		} catch(IOException e){
-			throw new LoggingException("No city CSV could be found");
-		}
 		
-		byte[] countryBytes = null;
-		try (InputStream inputStream = new FileInputStream(INPUT_FILE_COUNTRY)){
-			countryBytes = new byte[inputStream.available()];
-			inputStream.read(countryBytes);
-			countries = ByteStringManipulator.convertByteArrayto2DList(countryBytes);
-
-			if (countries.size() == 0){
-				throw new LoggingException("That Data table is empty");
-			}
-			
-		} catch(IOException e){
-			throw new LoggingException("No city CSV could be found");
-		}
-
+		Relation city = new Relation("City", cityAttrs);
+		Relation country = new Relation("Country", countryAttrs);
+		
+		city.addTuples(INPUT_FILE_CITY);
+		country.addTuples(INPUT_FILE_COUNTRY);
 
 		double startTime = System.nanoTime();
 		List<String> result = getNext();
