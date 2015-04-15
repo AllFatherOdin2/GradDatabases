@@ -23,11 +23,12 @@ import ProjectCode.QueryExecImpl;
 
 public class LoggingImpl {
 	private static final String direct = System.getProperty("user.dir") + "\\";
+	/*
 	private static List<List<String>> cities = new ArrayList<List<String>>();
 	private static List<List<String>> countries = new ArrayList<List<String>>();
 	private static List<String> results = new ArrayList<String>();
 	private static List<String> log = new ArrayList<String>();
-	
+	*/
 	private static double queryTime = 0;
 	
 	/**
@@ -77,7 +78,11 @@ public class LoggingImpl {
 	}
 	
 	
-	//TODO: read one in, write to log file. "read in 'tuple id from file' population is 'old Pop' at 'Time'","writing to 'file' 'tuple id', population to 'new'", "Commit 'file'"
+	/**
+	 * 
+	 * @return
+	 * @throws LoggingException
+	 */
 	private List<String> getNext() throws LoggingException{
 		/*
 	 	Date date = new Date();
@@ -124,6 +129,10 @@ public class LoggingImpl {
 	 
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	private List<String> close(){
 		/*
 		System.out.println(results.size());
@@ -131,10 +140,8 @@ public class LoggingImpl {
 			System.out.println(city);
 		}
 		*/
-		List<String> tempResults = results;
-		cities = null;
-		countries = null;
-		results = null;
+		List<String> tempResults = null;
+		
 		return tempResults;
 		
 	}
