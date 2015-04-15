@@ -79,7 +79,8 @@ public class LoggingImpl {
 	
 	//TODO: read one in, write to log file. "read in 'tuple id from file' population is 'old Pop' at 'Time'","writing to 'file' 'tuple id', population to 'new'", "Commit 'file'"
 	private List<String> getNext() throws LoggingException{
-		Date date = new Date();
+		/*
+	 	Date date = new Date();
 		for(List<String> city : cities){
 			//String countryCode = city.get(2);
 			//Read in tuple
@@ -96,7 +97,7 @@ public class LoggingImpl {
 		//write back to CSV file
 		//commit and push to log file
 		for (List<String> country : countries){
-			/*String code = country.get(0);
+			String code = country.get(0);
 				if (countryCode.compareTo(code) == 0){
 					
 					int countryPop = Integer.parseInt(country.get(6));
@@ -104,7 +105,7 @@ public class LoggingImpl {
 					if(cityPop > .4 * countryPop){
 						results.add(city.get(1));
 				}
-			}*/
+			}
 			int countryPop = Integer.parseInt(country.get(6));
 			log.add("READ " + country.get(1) + "FROM country, population: " + country.get(6) + ",TIME: " + date.getTime());
 			
@@ -118,7 +119,9 @@ public class LoggingImpl {
 		if(results.size() == 0){
 			throw new LoggingException("No matches were found.");
 		}
+	 	*/	
 		return close();
+	 
 	}
 	
 	private List<String> close(){
