@@ -10,4 +10,11 @@ public class Log {
 		log.add(entry);
 	}
 	
+	public static List<String> getLog(){
+		return log;
+	}
+	
+	public static void clearLog(){
+		log = new ArrayList<String>();
+	}
 }
