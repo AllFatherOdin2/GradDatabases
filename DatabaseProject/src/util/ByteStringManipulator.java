@@ -1,4 +1,6 @@
-package indexMechTake2;
+package util;
+
+import indexMechTake2.Bucket;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +65,45 @@ public class ByteStringManipulator {
 		}
 			
 		return result;
+	}
+	
+	/**
+	 * Converts a byte array into a list of lists of strings in CSV format.
+	 * 
+	 * @param data Input byte array
+	 * @return List of tuples, which are lists of strings.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<List<String>> convertByteArrayto2DList(byte[] data) {
+		String result = Arrays.toString(data);
+		//Will be in array form, so this removes "[" and "]"
+		result = result.substring(1, result.length()-1); 
+		
+		String[] resultArray = result.split(", ");
+		
+		result = "";
+		for(String s : resultArray){
+			result += (char)Integer.parseInt(s);
+		}
+		result = result.replaceAll("\\bNULL\\b","\"NULL\"");
+
+		resultArray = result.split("\n");
+
+		List<List<String>> resultList = new ArrayList<List<String>>();
+		for(String s: resultArray){
+			s = s.substring(1, s.length()-2); //remove new line character
+			String[] columnArray = s.split("\",\"");
+			for(int i = 0; i < columnArray.length; i++){
+				
+				if(columnArray[i].length() > 0){
+					columnArray[i] = columnArray[i];
+				}
+			}
+			
+			resultList.add(new ArrayList(Arrays.asList(columnArray)));
+		}
+		
+		return resultList;
 	}
 	
 }

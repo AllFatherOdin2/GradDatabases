@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import util.ByteStringManipulator;
 import ProjectCode.QueryExecException;
 import ProjectCode.QueryExecImpl;
 
@@ -43,7 +44,7 @@ public class LoggingImpl {
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE_CITY)){
 			cityBytes = new byte[inputStream.available()];
 			inputStream.read(cityBytes);
-			cities = convertByteArrayto2DList(cityBytes);
+			cities = ByteStringManipulator.convertByteArrayto2DList(cityBytes);
 
 			if(cities.size() == 0){
 				throw new LoggingException("That Data table is empty");
@@ -57,7 +58,7 @@ public class LoggingImpl {
 		try (InputStream inputStream = new FileInputStream(INPUT_FILE_COUNTRY)){
 			countryBytes = new byte[inputStream.available()];
 			inputStream.read(countryBytes);
-			countries = convertByteArrayto2DList(countryBytes);
+			countries = ByteStringManipulator.convertByteArrayto2DList(countryBytes);
 
 			if (countries.size() == 0){
 				throw new LoggingException("That Data table is empty");
@@ -134,45 +135,6 @@ public class LoggingImpl {
 		results = null;
 		return tempResults;
 		
-	}
-	
-	/**
-	 * Converts a byte array into a list of lists of strings in CSV format.
-	 * 
-	 * @param data Input byte array
-	 * @return List of tuples, which are lists of strings.
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List<List<String>> convertByteArrayto2DList(byte[] data) {
-		String result = Arrays.toString(data);
-		//Will be in array form, so this removes "[" and "]"
-		result = result.substring(1, result.length()-1); 
-		
-		String[] resultArray = result.split(", ");
-		
-		result = "";
-		for(String s : resultArray){
-			result += (char)Integer.parseInt(s);
-		}
-		result = result.replaceAll("\\bNULL\\b","\"NULL\"");
-
-		resultArray = result.split("\n");
-
-		List<List<String>> resultList = new ArrayList<List<String>>();
-		for(String s: resultArray){
-			s = s.substring(1, s.length()-2); //remove new line character
-			String[] columnArray = s.split("\",\"");
-			for(int i = 0; i < columnArray.length; i++){
-				
-				if(columnArray[i].length() > 0){
-					columnArray[i] = columnArray[i];
-				}
-			}
-			
-			resultList.add(new ArrayList(Arrays.asList(columnArray)));
-		}
-		
-		return resultList;
 	}
 	
 	public double getQueryTime() {

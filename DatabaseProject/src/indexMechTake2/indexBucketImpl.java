@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.ByteStringManipulator;
 import ProjectCode.indexMechException;
 
 public class indexBucketImpl {
