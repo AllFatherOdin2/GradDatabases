@@ -17,4 +17,8 @@ public class Log {
 	public static void clearLog(){
 		log = new ArrayList<String>();
 	}
+	
+	public static void writeToFile(){
+		
+	}
 }
