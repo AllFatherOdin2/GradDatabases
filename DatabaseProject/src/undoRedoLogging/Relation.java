@@ -35,7 +35,7 @@ public class Relation {
 			}
 			
 		} catch(IOException e){
-			throw new LoggingException("No matching CSV could be found could be found at given URL");
+			throw new LoggingException("No CSV could be found could be found at given URL");
 		}
 	}
 	
@@ -49,5 +49,17 @@ public class Relation {
 		for(List<String> stringList : twoDStrings){
 			tuples.add(new Tuple(stringList));
 		}	
+	}
+	
+	public String getName(){
+		return name;
+	}
+
+	public List<String> getAttributes(){
+		return attributes;
+	}
+	
+	public List<Tuple> getTuples(){
+		return tuples;
 	}
 }
