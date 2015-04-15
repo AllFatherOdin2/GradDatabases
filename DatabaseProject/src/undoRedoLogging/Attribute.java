@@ -1,9 +1,27 @@
 package undoRedoLogging;
 
 public class Attribute {
-	private String key;
+	private String name;
 	
-	public Attribute(String key){
-		this.key = key;
+	/**
+	 * Basic Constructor
+	 * @param name Name of the attribute
+	 */
+	public Attribute(String name){
+		this.name = name;
+	}
+	
+	/**
+	 * @return the key
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the key to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 }
