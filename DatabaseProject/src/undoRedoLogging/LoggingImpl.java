@@ -81,6 +81,13 @@ public class LoggingImpl {
 	}
 	
 	/**
+	 * Undo changes from the must recent commit.
+	 */
+	public void undoChanges(){
+		
+	}
+	
+	/**
 	 * Takes a Relation with a population attribute and modifies the population of all tuples to be 102% of original value
 	 * @param table Relation being modified
 	 * @throws LoggingException
