@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import util.ByteStringManipulator;
@@ -17,6 +18,11 @@ public class Relation {
 	private List<String> attributes;
 	private List<Block> blocks;
 
+	/**
+	 * Relation constructor containing the table name and the list of attributes in this table
+	 * @param name
+	 * @param attributes
+	 */
 	public Relation(String name, List<String> attributes){
 		this.name = name;
 		this.attributes = attributes;
@@ -92,18 +98,39 @@ public class Relation {
 		
 	}
 	
+	/**
+	 * updates the block on the index with the provided block
+	 * @param index
+	 * @param block
+	 */
 	public void updateBlock(int index, Block block){
+		Date date = new Date();
+
 		blocks.set(index, block);
+		String logValue = "COMMIT, " + index + ", " + date.getTime();
+		Log.addLog(logValue);
 	}
 	
+	/**
+	 * getter for the name of the relation
+	 * @return name of relation
+	 */
 	public String getName(){
 		return name;
 	}
 
+	/**
+	 * getter for the list of attributes
+	 * @return List of Attributes
+	 */
 	public List<String> getAttributes(){
 		return attributes;
 	}
 	
+	/**
+	 * getter for the list of blocks
+	 * @return list of blocks
+	 */
 	public List<Block> getBlocks(){
 		return blocks;
 	}
