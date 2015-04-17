@@ -84,45 +84,55 @@ public class LoggingImpl {
 	 * Undo changes from the must recent commit.
 	 */
 	public void undoChanges(){
-
-		Block commitBlock = null;
+		List<Tuple> oldTuples = null;
 		List<Tuple> commitTuples = null;
 		List<String> log = Log.getLog();
+		int blockEntry = -1;
+		String tableName = "";
 		for(int x = log.size() - 1; x >= 0; x--){
 			String entry = log.get(x);
 			String[] entryArray = entry.split(", ");
 			String entryType = entryArray[0];
 			
 			if(entryType == "COMMIT"){
-				if(commitBlock != null){
+				if(oldTuples != null){
 					//so this is the second commit
 					break;
 				}
-				String tableName = entryArray[1];
+				tableName = entryArray[1];
+				blockEntry = Integer.parseInt(entryArray[2]);
 				List<Block> blocks = null;
 				if(tableName.equals(city.getName())){
 					blocks = city.getBlocks();
 				}else if(tableName.equals(country.getName())){
-					blocks = city.getBlocks();
+					blocks = country.getBlocks();
 				}else{
 					blocks = new ArrayList<Block>();
 				}
-				commitBlock = new Block();
-				commitTuples = blocks.get(x).getTuples();
+				oldTuples = blocks.get(x).getTuples();
+				commitTuples = new ArrayList<Tuple>();
 			}
 			
 
-			if(entryType == "WRITE" && commitBlock != null){
+			if(entryType == "WRITE" && oldTuples != null){
 				int tupleIndex = Integer.parseInt(entryArray[1]);
 				int indexOfChange = Integer.parseInt(entryArray[2]);
 				String oldValue = entryArray[3];
-				Tuple newTuple = commitTuples.get(tupleIndex);
+				Tuple newTuple = oldTuples.get(tupleIndex);
 				
 				newTuple.updateData(indexOfChange, oldValue);
-				
-				commitBlock.addTuple(newTuple);
+				commitTuples.add(0, newTuple);
 			}
 		}
+		
+		Block updatedBlock = new Block(commitTuples);
+		
+		if(tableName.equals(city.getName())){
+			city.updateBlock(blockEntry, updatedBlock);
+		}else if(tableName.equals(country.getName())){
+			country.updateBlock(blockEntry, updatedBlock);
+		}
+		
 	}
 	
 	/**
