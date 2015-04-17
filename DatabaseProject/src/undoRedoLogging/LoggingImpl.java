@@ -91,6 +91,7 @@ public class LoggingImpl {
 	 * @throws LoggingException 
 	 */
 	public static void undoLastChange() throws LoggingException{
+		Date date = new Date();
 		List<Tuple> oldTuples = null;
 		List<Tuple> commitTuples = null;
 		List<String> log = Log.getLogFromFile();
@@ -126,6 +127,7 @@ public class LoggingImpl {
 				int indexOfChange = Integer.parseInt(entryArray[2]);
 				String oldValue = entryArray[3];
 				Tuple newTuple = oldTuples.get(tupleIndex);
+				Log.addLog("READ, " + newTuple.getData().get(0) + ", " + date.getTime());
 				
 				newTuple.updateData(indexOfChange, oldValue, tupleIndex);
 				commitTuples.add(0, newTuple);
