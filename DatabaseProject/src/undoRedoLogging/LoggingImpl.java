@@ -84,7 +84,38 @@ public class LoggingImpl {
 	 * Undo changes from the must recent commit.
 	 */
 	public void undoChanges(){
-		
+		Block commitBlock = null;
+		List<String> log = Log.getLog();
+		for(int x = log.size() - 1; x >= 0; x--){
+			String entry = log.get(x);
+			String[] entryArray = entry.split(", ");
+			String entryType = entryArray[0];
+			
+			if(entryType == "COMMIT"){
+				if(commitBlock != null){
+					//so this is the second commit
+					break;
+				}
+				String tableName = entryArray[1];
+				List<Block> blocks = null;
+				if(tableName.equals(city.getName())){
+					blocks = city.getBlocks();
+				}else if(tableName.equals(country.getName())){
+					blocks = city.getBlocks();
+				}else{
+					blocks = new ArrayList<Block>();
+				}
+				commitBlock = blocks.get(x);
+			}
+			
+
+			if(entryType == "WRITE" && commitBlock != null){
+				String tupleIndex = entryArray[1];
+				String oldValue = entryArray[2];
+				
+				
+			}
+		}
 	}
 	
 	/**
