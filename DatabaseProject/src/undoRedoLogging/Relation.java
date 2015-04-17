@@ -23,7 +23,7 @@ public class Relation {
 		this.blocks = new ArrayList<Block>();
 	}
 	
-	public void addTuples(String url) throws LoggingException{
+	public void loadTuples(String url) throws LoggingException{
 		byte[] relationBytes = null;
 		try (InputStream inputStream = new FileInputStream(url)){
 			relationBytes = new byte[inputStream.available()];
