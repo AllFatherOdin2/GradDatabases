@@ -30,6 +30,11 @@ public class Tuple {
 		return data;
 	}
 	
+	/**
+	 * updates the value stored at the provided index within the tuple with newValue
+	 * @param index
+	 * @param newValue
+	 */
 	public void updateData(int index, String newValue){
 		Date date = new Date();
 		String oldValue = data.get(index);
