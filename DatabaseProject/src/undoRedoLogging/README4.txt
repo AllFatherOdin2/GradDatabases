@@ -15,7 +15,7 @@ Assumptions
 		-Data stored in Relation object is considered "on disk", from Java's perspective.
 	-Log statements in log class are considered "on disk", even if it has not been written to file.
 	-Blocks have been arbitrarily limited in size to 200 tuples, regardless of what is stored in the tuple.
-	-Data will be commited once per block.
+	-Data will be committed once per block.
 	
 Our File System
 	-LoggingImpl

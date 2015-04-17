@@ -89,15 +89,22 @@ public class LoggingImpl {
 		Date date = new Date();
 		//Handle city populations
 		List<Block> cityBlocks= city.getBlocks();
+		//Hardcoded because this is single purpose software at the moment. Easy enough to fix with a parameter, though.
+		int cityIndexLoc = city.getAttributeArrayLocation("Population");
 		for(Block block : cityBlocks){
 			List<Tuple> blockTuples = block.getTuples();
 			for(Tuple tuple : blockTuples){
-				
+				int origPop = Integer.parseInt(tuple.getData().get(cityIndexLoc));
+				Log.addLog("READ, " + tuple.getData().get(0) + ", " + date.getTime());
+				int newPop = (int) (origPop * 1.02);
+				tuple.updateData(cityIndexLoc, newPop+"");
 			}
+			
 		}
 		
 		//Handle country populations
 		List<Block> countryBlocks= country.getBlocks();
+		int countryIndexLoc = country.getAttributeArrayLocation("Population");
 		for(Block block : countryBlocks){
 			List<Tuple> blockTuples = block.getTuples();
 			for(Tuple tuple : blockTuples){
