@@ -107,7 +107,7 @@ public class Relation {
 		Date date = new Date();
 
 		blocks.set(index, block);
-		String logValue = "COMMIT, " + index + ", " + date.getTime();
+		String logValue = "COMMIT, " + name + ", " + index + ", " + date.getTime();
 		Log.addLog(logValue);
 	}
 	
