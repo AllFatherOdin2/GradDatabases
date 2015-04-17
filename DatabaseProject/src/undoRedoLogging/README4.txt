@@ -5,7 +5,7 @@ CS 542 - Database Management Systems
 Assumptions
 	-Log statement formats 
 		-"READ, <rid>, <time>"
-		-"WRITE, <rid>, <Old value>, <New value>, <time>"
+		-"WRITE, <rid>, <index of change>, <Old value>, <New value>, <time>"
 		-"Commit <Block>"
 	-Modification of populations only increases by 2%
 	-Changes in city population do not modify country population
