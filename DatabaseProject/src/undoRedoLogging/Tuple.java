@@ -36,4 +36,11 @@ public class Tuple {
 		this.data = data;
 	}
 	
+	public void updateData(int index, String newValue){
+		String oldValue = data.get(index);
+		data.set(index, newValue);
+		
+		String logValue = "WRITE, " + ", " + ", " + ", ";
+		Log.addLog(logValue);
+	}
 }
