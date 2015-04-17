@@ -8,29 +8,14 @@ package undoRedoLogging;
  * @author JBosworth
  */
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import util.ByteStringManipulator;
-import ProjectCode.QueryExecException;
-import ProjectCode.QueryExecImpl;
-
 
 public class LoggingImpl {
 	private static final String direct = System.getProperty("user.dir") + "\\";
 	private static Relation city;
 	private static Relation country;
-	/*
-	private static List<List<String>> cities = new ArrayList<List<String>>();
-	private static List<List<String>> countries = new ArrayList<List<String>>();
-	private static List<String> results = new ArrayList<String>();
-	private static List<String> log = new ArrayList<String>();
-	*/
 	private static double queryTime = 0;
 	
 	/**
@@ -92,12 +77,6 @@ public class LoggingImpl {
 	 * Writes the log string out to a text file
 	 */
 	private void close(){
-		/*
-		System.out.println(results.size());
-		for(String city : results){
-			System.out.println(city);
-		}
-		*/
 		Log.writeToFile();
 	}
 	
@@ -129,10 +108,18 @@ public class LoggingImpl {
 		}
 	}
 	
+	/**
+	 * getter for queryTime
+	 * @return queryTime of the most recent query
+	 */
 	public double getQueryTime() {
 		return queryTime;
 	}
 
+	/**
+	 * setter for query Time
+	 * @param queryTime
+	 */
 	public static void setQueryTime(double queryTime) {
 		LoggingImpl.queryTime = queryTime;
 	}
