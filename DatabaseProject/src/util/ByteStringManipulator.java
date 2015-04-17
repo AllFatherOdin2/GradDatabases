@@ -155,4 +155,23 @@ public class ByteStringManipulator {
 		}
 		
 	}
+	
+	public static List<String> byteToStringList(String targetFile) throws Exception{
+		byte[] bytes = null;
+		String inputString = null;
+		try (InputStream inputStream = new FileInputStream(targetFile)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			inputString = byteToStringArray(bytes);
+
+		} catch (IOException e) {
+			//File does not exist, therefore create in next step
+			throw new Exception("Cannot find target file");
+		}
+		String[] stringArray = inputString.split("\n");
+		ArrayList<String> stringList = new ArrayList(Arrays.asList(stringArray));
+		
+		return stringList;
+	}
 }

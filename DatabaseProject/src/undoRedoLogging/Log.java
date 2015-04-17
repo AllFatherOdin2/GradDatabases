@@ -44,6 +44,20 @@ public class Log {
 		ByteStringManipulator.addStringListToTargetFile(logFile, log);
 		clearLog();
 	}
+	
+	/**
+	 * Read in log file as a list of strings
+	 * @return List of strings that contains the log data
+	 * @throws LoggingException 
+	 */
+	public List<String> getLogFromFile() throws LoggingException{
+		String targetFile = direct + "log.txt";
+		try {
+			return ByteStringManipulator.byteToStringList(targetFile);
+		} catch (Exception e) {
+			throw new LoggingException("Log file does not exist");
+		}
+	}
 }
 
 
