@@ -2,6 +2,11 @@ package util;
 
 import indexMechTake2.Bucket;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -106,4 +111,48 @@ public class ByteStringManipulator {
 		return resultList;
 	}
 	
+	/**
+	 * 
+	 * @param targetFile
+	 * @param dataList
+	 */
+	public static void addStringListToTargetFile(String targetFile, List<String> dataList) {
+		String INPUT_FILE = targetFile + ".txt";
+
+		byte[] bytes = null;
+		String inputString = null;
+		try (InputStream inputStream = new FileInputStream(INPUT_FILE)){
+			bytes = new byte[inputStream.available()];
+			inputStream.read(bytes);
+			
+			inputString = byteToStringArray(bytes);
+
+		} catch (IOException e) {
+			//File does not exist, therefore create in next step
+			inputString = "";
+		}
+		
+		File entry;
+		FileOutputStream fop = null;
+
+		entry = new File(INPUT_FILE);
+		try {
+			fop = new FileOutputStream(entry);
+			for(String dataEntry : dataList){
+				inputString += dataEntry + "\n";
+			}
+			//Remove last newline character
+			String outputString = inputString.substring(0, inputString.length()-1);
+			
+			byte[] data = outputString.getBytes();
+			
+			fop.write(data);
+			fop.flush();
+			fop.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

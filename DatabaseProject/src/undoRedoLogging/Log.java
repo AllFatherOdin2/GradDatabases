@@ -3,6 +3,8 @@ package undoRedoLogging;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.ByteStringManipulator;
+
 /**
  * @author DModica
  * @author JBosworth
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public class Log {
 	private static List<String> log = new ArrayList<String>();
-	
+	private static final String direct = System.getProperty("user.dir") + "\\";
 	/**
 	 * Adds a log statement to the log list
 	 * @param entry Log statement to add
@@ -38,6 +40,12 @@ public class Log {
 	 * Writes the entire log to a file
 	 */
 	public static void writeToFile(){
-		
+		String logFile = direct + "log.txt";
+		ByteStringManipulator.addStringListToTargetFile(logFile, log);
+		clearLog();
 	}
 }
+
+
+
+
