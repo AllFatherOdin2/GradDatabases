@@ -13,6 +13,12 @@ import java.util.Date;
 import java.util.List;
 
 public class LoggingImpl {
+	
+	public static void main(String args[]) throws LoggingException{
+		open();
+		undoLastChange();
+	}
+	
 	private static final String direct = System.getProperty("user.dir") + "\\";
 	private static Relation city;
 	private static Relation country;
@@ -23,7 +29,7 @@ public class LoggingImpl {
 	 * @return
 	 * @throws LoggingException
 	 */
-	public void open() throws LoggingException{
+	public static void open() throws LoggingException{
 		final String INPUT_FILE_CITY = direct + "city.csv";
 		final String INPUT_FILE_COUNTRY = direct + "country.csv";
 		ArrayList<String> cityAttrs = new ArrayList<String>();
@@ -67,7 +73,7 @@ public class LoggingImpl {
 	 * Modifies both country and city relations and calls close.
 	 * @throws LoggingException
 	 */
-	private void getNext() throws LoggingException{
+	private static void getNext() throws LoggingException{
 		modifyRelation(city);
 		modifyRelation(country);
 		close();
@@ -76,23 +82,25 @@ public class LoggingImpl {
 	/**
 	 * Writes the log string out to a text file
 	 */
-	private void close(){
+	private static void close(){
 		Log.writeToFile();
 	}
 	
 	/**
 	 * Undo changes from the must recent commit.
+	 * @throws LoggingException 
 	 */
-	public void undoChanges(){
+	public static void undoLastChange() throws LoggingException{
 		List<Tuple> oldTuples = null;
 		List<Tuple> commitTuples = null;
-		List<String> log = Log.getLog();
+		List<String> log = Log.getLogFromFile();
 		int blockEntry = -1;
 		String tableName = "";
 		for(int x = log.size() - 1; x >= 0; x--){
 			String entry = log.get(x);
 			String[] entryArray = entry.split(", ");
 			String entryType = entryArray[0];
+			System.out.println(entryType);
 			
 			if(entryType == "COMMIT"){
 				if(oldTuples != null){
@@ -122,6 +130,7 @@ public class LoggingImpl {
 				
 				newTuple.updateData(indexOfChange, oldValue);
 				commitTuples.add(0, newTuple);
+				System.out.println(newTuple.getData().get(1));
 			}
 		}
 		
@@ -140,7 +149,7 @@ public class LoggingImpl {
 	 * @param table Relation being modified
 	 * @throws LoggingException
 	 */
-	private void modifyRelation(Relation table) throws LoggingException{
+	private static void modifyRelation(Relation table) throws LoggingException{
 		Date date = new Date();
 		//Handle city populations
 		List<Block> cityBlocks= table.getBlocks();
@@ -154,7 +163,12 @@ public class LoggingImpl {
 		for(int i = 0; i < cityBlocks.size(); i++){
 			List<Tuple> blockTuples = cityBlocks.get(i).getTuples();
 			for(Tuple tuple : blockTuples){
-				int origPop = Integer.parseInt(tuple.getData().get(attrIndexLoc));
+				int origPop = 0;
+				try{
+					origPop = Integer.parseInt(tuple.getData().get(attrIndexLoc));
+				}catch(Exception e){
+					continue; //the data was entered incorrectly, so ignore it.
+				}
 				Log.addLog("READ, " + tuple.getData().get(0) + ", " + date.getTime());
 				int newPop = (int) (origPop * 1.02);
 				tuple.updateData(attrIndexLoc, newPop+"");

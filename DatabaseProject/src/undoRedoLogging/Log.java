@@ -40,7 +40,7 @@ public class Log {
 	 * Writes the entire log to a file
 	 */
 	public static void writeToFile(){
-		String logFile = direct + "log.txt";
+		String logFile = direct + "log";
 		ByteStringManipulator.addStringListToTargetFile(logFile, log);
 		clearLog();
 	}
@@ -50,7 +50,7 @@ public class Log {
 	 * @return List of strings that contains the log data
 	 * @throws LoggingException 
 	 */
-	public List<String> getLogFromFile() throws LoggingException{
+	public static List<String> getLogFromFile() throws LoggingException{
 		String targetFile = direct + "log.txt";
 		try {
 			return ByteStringManipulator.byteToStringList(targetFile);
