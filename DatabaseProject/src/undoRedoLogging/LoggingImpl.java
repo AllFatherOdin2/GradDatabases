@@ -23,6 +23,8 @@ import ProjectCode.QueryExecImpl;
 
 public class LoggingImpl {
 	private static final String direct = System.getProperty("user.dir") + "\\";
+	private static Relation city;
+	private static Relation country;
 	/*
 	private static List<List<String>> cities = new ArrayList<List<String>>();
 	private static List<List<String>> countries = new ArrayList<List<String>>();
@@ -45,6 +47,7 @@ public class LoggingImpl {
 		cityAttrs.add("CountryCode");
 		cityAttrs.add("District");
 		cityAttrs.add("Population");
+		//Not pretty, but effective.
 		ArrayList<String> countryAttrs = new ArrayList<String>();
 		countryAttrs.add("Code");
 		countryAttrs.add("Name");
@@ -62,9 +65,8 @@ public class LoggingImpl {
 		countryAttrs.add("Code2");
 		countryAttrs.add("LocalName");
 		
-		
-		Relation city = new Relation("City", cityAttrs);
-		Relation country = new Relation("Country", countryAttrs);
+		city = new Relation("City", cityAttrs);
+		country = new Relation("Country", countryAttrs);
 		
 		city.loadTuples(INPUT_FILE_CITY);
 		country.loadTuples(INPUT_FILE_COUNTRY);
@@ -84,6 +86,26 @@ public class LoggingImpl {
 	 * @throws LoggingException
 	 */
 	private List<String> getNext() throws LoggingException{
+		Date date = new Date();
+		//Handle city populations
+		List<Block> cityBlocks= city.getBlocks();
+		for(Block block : cityBlocks){
+			List<Tuple> blockTuples = block.getTuples();
+			for(Tuple tuple : blockTuples){
+				
+			}
+		}
+		
+		//Handle country populations
+		List<Block> countryBlocks= country.getBlocks();
+		for(Block block : countryBlocks){
+			List<Tuple> blockTuples = block.getTuples();
+			for(Tuple tuple : blockTuples){
+				
+			}
+		}
+		
+		
 		/*
 	 	Date date = new Date();
 		for(List<String> city : cities){
