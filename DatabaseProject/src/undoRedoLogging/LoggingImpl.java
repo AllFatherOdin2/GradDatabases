@@ -66,8 +66,8 @@ public class LoggingImpl {
 		Relation city = new Relation("City", cityAttrs);
 		Relation country = new Relation("Country", countryAttrs);
 		
-		city.addTuples(INPUT_FILE_CITY);
-		country.addTuples(INPUT_FILE_COUNTRY);
+		city.loadTuples(INPUT_FILE_CITY);
+		country.loadTuples(INPUT_FILE_COUNTRY);
 
 		double startTime = System.nanoTime();
 		List<String> result = getNext();
