@@ -92,6 +92,9 @@ public class Relation {
 		
 	}
 	
+	public void updateBlock(int index, Block block){
+		blocks.set(index, block);
+	}
 	
 	public String getName(){
 		return name;
