@@ -15,12 +15,12 @@ import util.ByteStringManipulator;
 public class Relation {
 	private String name;
 	private List<String> attributes;
-	private List<Tuple> tuples;
+	private List<Block> blocks;
 
 	public Relation(String name, List<String> attributes){
 		this.name = name;
 		this.attributes = attributes;
-		this.tuples = new ArrayList<Tuple>();
+		this.blocks = new ArrayList<Block>();
 	}
 	
 	public void addTuples(String url) throws LoggingException{
@@ -28,9 +28,9 @@ public class Relation {
 		try (InputStream inputStream = new FileInputStream(url)){
 			relationBytes = new byte[inputStream.available()];
 			inputStream.read(relationBytes);
-			convertByteToTuples(relationBytes);
+			convertByteToBlocks(relationBytes);
 			
-			if(tuples.size() == 0){
+			if(blocks.size() == 0){
 				throw new LoggingException("That data table is empty");
 			}
 			
@@ -43,13 +43,29 @@ public class Relation {
 	 * Takes a byte stream and creates a list of tuples to put in the Relation
 	 * @param data Byte stream read in from file
 	 */
-	private void convertByteToTuples(byte[] data){
+	private void convertByteToBlocks(byte[] data){
 		List<List<String>> twoDStrings = ByteStringManipulator.convertByteArrayto2DList(data);
+		List<Tuple> tuples = new ArrayList<Tuple>();
 		
 		for(List<String> stringList : twoDStrings){
 			tuples.add(new Tuple(stringList));
-		}	
+		}
+		
+		Block newBlock = new Block();
+		
+		int x = 0;
+		for(Tuple tuple : tuples){
+			newBlock.addTuple(tuple);
+			x++;
+			if(x >= 199){
+				blocks.add(newBlock);
+				newBlock = new Block();
+				x = 0;
+			}
+		}
+		
 	}
+	
 	
 	public String getName(){
 		return name;
@@ -59,7 +75,7 @@ public class Relation {
 		return attributes;
 	}
 	
-	public List<Tuple> getTuples(){
-		return tuples;
+	public List<Block> getBlocks(){
+		return blocks;
 	}
 }
