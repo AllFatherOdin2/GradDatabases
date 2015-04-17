@@ -6,7 +6,7 @@ Assumptions
 	-Log statement formats 
 		-"READ, <rid>, <time>"
 		-"WRITE, <rid>, <index of change>, <Old value>, <New value>, <time>"
-		-"COMMIT, <Table Name>, <Block>, <time>"
+		-"Commit <Block>"
 	-Modification of populations only increases by 2%
 	-Changes in city population do not modify country population
 	-Relation class will read in from CSV files and be used after that point
