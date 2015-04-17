@@ -32,15 +32,15 @@ public class Tuple {
 	
 	/**
 	 * updates the value stored at the provided index within the tuple with newValue
-	 * @param index
+	 * @param attributeIndex
 	 * @param newValue
 	 */
-	public void updateData(int index, String newValue){
+	public void updateData(int attributeIndex, String newValue, int tupleIndex){
 		Date date = new Date();
-		String oldValue = data.get(index);
-		data.set(index, newValue);
+		String oldValue = data.get(attributeIndex);
+		data.set(attributeIndex, newValue);
 		
-		String logValue = "WRITE, " + data.get(0) + ", " + index + ", " + oldValue  + ", " + data.get(index) + ", " + date.getTime();
+		String logValue = "WRITE, " + tupleIndex + ", " + attributeIndex + ", " + oldValue  + ", " + data.get(attributeIndex) + ", " + date.getTime();
 		Log.addLog(logValue);
 	}
 }

@@ -100,9 +100,8 @@ public class LoggingImpl {
 			String entry = log.get(x);
 			String[] entryArray = entry.split(", ");
 			String entryType = entryArray[0];
-			System.out.println(entryType);
 			
-			if(entryType == "COMMIT"){
+			if(entryType.equals("COMMIT")){
 				if(oldTuples != null){
 					//so this is the second commit
 					break;
@@ -117,20 +116,19 @@ public class LoggingImpl {
 				}else{
 					blocks = new ArrayList<Block>();
 				}
-				oldTuples = blocks.get(x).getTuples();
+				oldTuples = blocks.get(blockEntry).getTuples();
 				commitTuples = new ArrayList<Tuple>();
 			}
 			
 
-			if(entryType == "WRITE" && oldTuples != null){
+			if(entryType.equals("WRITE") && oldTuples != null){
 				int tupleIndex = Integer.parseInt(entryArray[1]);
 				int indexOfChange = Integer.parseInt(entryArray[2]);
 				String oldValue = entryArray[3];
 				Tuple newTuple = oldTuples.get(tupleIndex);
 				
-				newTuple.updateData(indexOfChange, oldValue);
+				newTuple.updateData(indexOfChange, oldValue, tupleIndex);
 				commitTuples.add(0, newTuple);
-				System.out.println(newTuple.getData().get(1));
 			}
 		}
 		
@@ -142,6 +140,7 @@ public class LoggingImpl {
 			country.updateBlock(blockEntry, updatedBlock);
 		}
 		
+		Log.writeToFile();
 	}
 	
 	/**
@@ -152,7 +151,7 @@ public class LoggingImpl {
 	private static void modifyRelation(Relation table) throws LoggingException{
 		Date date = new Date();
 		//Handle city populations
-		List<Block> cityBlocks= table.getBlocks();
+		List<Block> blocks= table.getBlocks();
 		//Hardcoded because this is single purpose software at the moment. Easy enough to fix with a parameter, though.
 		int attrIndexLoc;
 		try {
@@ -160,9 +159,10 @@ public class LoggingImpl {
 		} catch (LoggingException e) {
 			throw new LoggingException("The population attribute does not exist for this relation");
 		}
-		for(int i = 0; i < cityBlocks.size(); i++){
-			List<Tuple> blockTuples = cityBlocks.get(i).getTuples();
-			for(Tuple tuple : blockTuples){
+		for(int i = 0; i < blocks.size(); i++){
+			List<Tuple> blockTuples = blocks.get(i).getTuples();
+			for(int k = 0; k < blockTuples.size(); k++){
+				Tuple tuple = blockTuples.get(k);
 				int origPop = 0;
 				try{
 					origPop = Integer.parseInt(tuple.getData().get(attrIndexLoc));
@@ -171,9 +171,9 @@ public class LoggingImpl {
 				}
 				Log.addLog("READ, " + tuple.getData().get(0) + ", " + date.getTime());
 				int newPop = (int) (origPop * 1.02);
-				tuple.updateData(attrIndexLoc, newPop+"");
+				tuple.updateData(attrIndexLoc, newPop+"", k);
 			}
-			table.updateBlock(i, cityBlocks.get(i));
+			table.updateBlock(i, blocks.get(i));
 		}
 	}
 	
