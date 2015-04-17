@@ -64,6 +64,10 @@ public class Relation {
 			}
 		}
 		
+		if(x != 0){
+			blocks.add(newBlock);
+		}
+		
 	}
 	
 	
