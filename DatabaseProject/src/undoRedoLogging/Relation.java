@@ -23,6 +23,11 @@ public class Relation {
 		this.blocks = new ArrayList<Block>();
 	}
 	
+	/**
+	 * loads all tuples from given url and converts the tuples into blocks to be store within the blocks of the relation
+	 * @param url
+	 * @throws LoggingException
+	 */
 	public void loadTuples(String url) throws LoggingException{
 		byte[] relationBytes = null;
 		try (InputStream inputStream = new FileInputStream(url)){
@@ -37,6 +42,23 @@ public class Relation {
 		} catch(IOException e){
 			throw new LoggingException("No CSV could be found could be found at given URL");
 		}
+	}
+	
+	/**
+	 * Takes in the name of an attribute and returns the location of that attribute in the array of attributes
+	 * @param attribute
+	 * @return location of attribute in the array of attributes
+	 * @throws LoggingException
+	 */
+	public int getAttributeArrayLocation(String attribute) throws LoggingException{
+		
+		int index = attributes.lastIndexOf(attribute);
+		
+		if(index <= -1){
+			throw new LoggingException("The " + attribute + " attribute does not exist in this relation");
+		}
+		
+		return index;
 	}
 	
 	/**
